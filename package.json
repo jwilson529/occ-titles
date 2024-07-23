@@ -1,0 +1,22 @@
+{
+  "name": "occ-titles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "fix": "phpcbf -d error_reporting=\"E_ALL&~E_DEPRECATED\" --ignore=*/vendor/*,*/node_modules/*  --standard=WordPress --extensions=php .",
+    "check": "phpcs -d error_reporting=\"E_ALL&~E_DEPRECATED\" --ignore=*/vendor/*,*/node_modules/*  --standard=WordPress --extensions=php . > check.txt",
+    "phpmd": "phpmd . text phpmd.xml --exclude vendor,node_modules > phpmd.txt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwilson529/OneClickContent---Titles.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jwilson529/OneClickContent---Titles/issues"
+  },
+  "homepage": "https://github.com/jwilson529/OneClickContent---Titles#readme"
+}
