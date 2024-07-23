@@ -9,12 +9,6 @@
             var content = $('#editor').length ? wp.data.select('core/editor').getEditedPostContent() : $('textarea#content').val();
             var nonce = occ_titles_admin_vars.occ_titles_ajax_nonce;
 
-            console.log('AJAX request data:', {
-                action: 'occ_titles_generate_titles',
-                content: content,
-                nonce: nonce
-            });
-
             $.ajax({
                 url: occ_titles_admin_vars.ajax_url,
                 type: 'POST',
@@ -24,10 +18,8 @@
                     nonce: nonce
                 },
                 success: function(response) {
-                    console.log('AJAX success response:', response);
                     if (response.success) {
                         var titles = response.data.titles;
-                        console.log('Titles data:', titles);
 
                         if (Array.isArray(titles)) {
                             var titlesList = $('<ol id="occ_titles_titles_list"></ol>');
@@ -49,7 +41,6 @@
 
                             $('#titlediv').after(titlesList);
                         } else {
-                            console.error('Expected titles to be an array, received:', titles);
                             alert('Unexpected response format. Please try again.');
                         }
                     } else {
@@ -57,10 +48,6 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('AJAX error:', textStatus, errorThrown);
-                    console.log('AJAX error response:', jqXHR.responseText);
-                    console.log('AJAX request status:', jqXHR.status);
-                    console.log('AJAX request status text:', jqXHR.statusText);
                     alert('Error generating titles.');
                 }
             });
