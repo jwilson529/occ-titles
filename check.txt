@@ -1,0 +1,136 @@
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/index.php
+--------------------------------------------------------------------------------------------------------
+FOUND 2 ERRORS AFFECTING 1 LINE
+--------------------------------------------------------------------------------------------------------
+ 1 | ERROR | You must use "/**" style comments for a file comment
+ 1 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+--------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/occ-titles.php
+-------------------------------------------------------------------------------------------------------------
+FOUND 1 ERROR AFFECTING 1 LINE
+-------------------------------------------------------------------------------------------------------------
+ 1 | ERROR | There must be no blank lines before the file comment
+-------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/includes/class-occ-titles-i18n.php
+---------------------------------------------------------------------------------------------------------------------------------
+FOUND 2 ERRORS AFFECTING 2 LINES
+---------------------------------------------------------------------------------------------------------------------------------
+  1 | ERROR | There must be no blank lines before the file comment
+ 27 | ERROR | Class name is not valid; consider Occ_Titles_I18n instead
+---------------------------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/includes/index.php
+-----------------------------------------------------------------------------------------------------------------
+FOUND 2 ERRORS AFFECTING 1 LINE
+-----------------------------------------------------------------------------------------------------------------
+ 1 | ERROR | You must use "/**" style comments for a file comment
+ 1 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+-----------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/includes/class-occ-titles-activator.php
+--------------------------------------------------------------------------------------------------------------------------------------
+FOUND 1 ERROR AFFECTING 1 LINE
+--------------------------------------------------------------------------------------------------------------------------------------
+ 1 | ERROR | There must be no blank lines before the file comment
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/includes/class-occ-titles-deactivator.php
+----------------------------------------------------------------------------------------------------------------------------------------
+FOUND 1 ERROR AFFECTING 1 LINE
+----------------------------------------------------------------------------------------------------------------------------------------
+ 1 | ERROR | There must be no blank lines before the file comment
+----------------------------------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/includes/class-occ-titles-loader.php
+-----------------------------------------------------------------------------------------------------------------------------------
+FOUND 2 ERRORS AFFECTING 2 LINES
+-----------------------------------------------------------------------------------------------------------------------------------
+  1 | ERROR | There must be no blank lines before the file comment
+ 77 | ERROR | Parameter comment must end with a full stop
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/admin/index.php
+--------------------------------------------------------------------------------------------------------------
+FOUND 2 ERRORS AFFECTING 1 LINE
+--------------------------------------------------------------------------------------------------------------
+ 1 | ERROR | You must use "/**" style comments for a file comment
+ 1 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+--------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/admin/class-occ-titles-ai-helper.php
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+FOUND 4 ERRORS AFFECTING 3 LINES
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+   1 | ERROR | Class file names should be based on the class name with "class-" prepended. Expected class-openai-helper.php, but found
+     |       | class-occ-titles-ai-helper.php.
+   1 | ERROR | Missing file doc comment
+   9 | ERROR | There must be no blank lines after the class comment
+ 188 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/admin/class-occ-titles-admin.php
+-------------------------------------------------------------------------------------------------------------------------------
+FOUND 12 ERRORS AFFECTING 11 LINES
+-------------------------------------------------------------------------------------------------------------------------------
+   1 | ERROR | There must be no blank lines before the file comment
+  67 | ERROR | Missing doc comment for function enqueue_scripts()
+  70 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+  81 | ERROR | Missing doc comment for function occ_titles_add_button()
+  84 | ERROR | Use Yoda Condition checks, you must.
+  84 | ERROR | Use Yoda Condition checks, you must.
+ 100 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+ 103 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+ 108 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+ 113 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+ 118 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+ 124 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+-------------------------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/uninstall.php
+------------------------------------------------------------------------------------------------------------
+FOUND 1 ERROR AFFECTING 1 LINE
+------------------------------------------------------------------------------------------------------------
+ 1 | ERROR | There must be no blank lines before the file comment
+------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/public/index.php
+---------------------------------------------------------------------------------------------------------------
+FOUND 2 ERRORS AFFECTING 1 LINE
+---------------------------------------------------------------------------------------------------------------
+ 1 | ERROR | You must use "/**" style comments for a file comment
+ 1 | ERROR | Inline comments must end in full-stops, exclamation marks, or question marks
+---------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/public/class-occ-titles-public.php
+---------------------------------------------------------------------------------------------------------------------------------
+FOUND 1 ERROR AFFECTING 1 LINE
+---------------------------------------------------------------------------------------------------------------------------------
+ 1 | ERROR | There must be no blank lines before the file comment
+---------------------------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/public/partials/occ-titles-public-display.php
+--------------------------------------------------------------------------------------------------------------------------------------------
+FOUND 2 ERRORS AFFECTING 2 LINES
+--------------------------------------------------------------------------------------------------------------------------------------------
+  1 | ERROR | There must be no blank lines before the file comment
+ 13 | ERROR | There must be exactly one blank line after the file comment
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+Time: 482ms; Memory: 14MB
+

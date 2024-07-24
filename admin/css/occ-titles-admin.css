@@ -1,4 +1,173 @@
-/**
- * All of the CSS for your admin-specific functionality should be
- * included in this file.
- */
+#occ_titles_table {
+    margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    text-align: center; /* Center all table data */
+}
+
+#occ_titles_table th, #occ_titles_table td {
+    padding: 12px;
+    text-align: center; /* Center text in table headers and cells */
+    border-bottom: 1px solid #ddd;
+}
+
+#occ_titles_table tr:hover {
+    background-color: #f5f5f5;
+}
+
+#occ_titles_table td {
+    vertical-align: middle; /* Vertically center table data */
+}
+
+#occ_titles_revert_button,
+#occ_titles_button {
+    margin: 1rem 0;
+}
+
+/* Spinner Styles */
+.occ-spinner-wrapper {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+.occ-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    margin: -40px 0 0 -40px;
+    border: 8px solid rgba(255, 255, 255, 0.1);
+    border-top: 8px solid #0073aa;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Spinner text */
+.occ-spinner-text {
+    position: absolute;
+    top: calc(50% + 80px);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 2em; /* Increase font size */
+    text-align: center;
+}
+
+/* Bigger emojis */
+#occ_titles_table td.emoji {
+    font-size: 3em; /* Increase emoji size */
+}
+
+/* Highlight best title row */
+#occ_titles_table tr.best-title {
+    background-color: #e0ffe0;
+}
+
+/* Customizing the title text */
+#occ_titles_table td a {
+    color: #0073aa;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#occ_titles_table td a:hover {
+    text-decoration: underline;
+}
+
+/* General Styles for the Settings Page */
+.occ_titles-settings-form .form-table {
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.occ_titles-settings-form .form-table th {
+    width: 25%;
+    text-align: left;
+    padding: 10px;
+    vertical-align: top;
+    font-weight: 600;
+    background-color: #f9f9f9;
+}
+
+.occ_titles-settings-form .form-table td {
+    padding: 10px;
+    vertical-align: top;
+}
+
+.occ_titles-settings-form .form-table .description {
+    margin-top: 5px;
+    color: #666;
+}
+
+.occ_titles-settings-form .form-table input[type="text"],
+.occ_titles-settings-form .form-table input[type="password"],
+.occ_titles-settings-form .form-table select {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Checkbox Styles */
+.occ_titles-settings-form .form-table input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Submit Button Styles */
+.occ_titles-settings-form .submit input[type="submit"] {
+    background: #0073aa;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.occ_titles-settings-form .submit input[type="submit"]:hover {
+    background: #005177;
+}
+
+#occ_titles_revert_button {
+    background: #0073aa;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+}
+
+#occ_titles_revert_button:hover {
+    background-color: #005177;
+}
+
+#occ_titles_revert_button:active {
+    background-color: #00395a;
+}
+
+#occ_titles_revert_button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #005177;
+}
