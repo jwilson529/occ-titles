@@ -49,11 +49,11 @@ OneClickContent - Titles is a WordPress plugin that leverages OpenAI to generate
 
 ## Screenshots
 
-1. **Title Generation:**
-   ![Title Generation](path/to/screenshot1.png)
+1. **OCC Titles Settings:**
+   ![Title Generation](assets/OneClickContentTitles-Settings.png)
 
-2. **Title Evaluation:**
-   ![Title Evaluation](path/to/screenshot2.png)
+2. **Title Generation:**
+   ![Title Evaluation](assets/OneClickContentTitles.png)
 
 ## Changelog
 

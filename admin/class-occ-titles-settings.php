@@ -29,7 +29,7 @@ class Occ_Titles_Settings {
 	public function occ_titles_register_options_page() {
 		add_options_page(
 			__( 'OneClickContent - Titles Settings', 'occ_titles' ),
-			__( 'OneClickContent - Titles', 'occ_titles' ),
+			__( 'OCC - Titles', 'occ_titles' ),
 			'manage_options',
 			'occ_titles-settings',
 			array( $this, 'occ_titles_options_page' )
@@ -133,26 +133,34 @@ class Occ_Titles_Settings {
 	/**
 	 * Callback for the post types field.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function occ_titles_post_types_callback() {
-		$selected_post_types = get_option( 'occ_titles_post_types', array() );
+	    $selected_post_types = get_option('occ_titles_post_types', array());
 
-		if ( empty( $selected_post_types ) ) {
-			$selected_post_types = array( 'post' );
-		}
+	    if (empty($selected_post_types)) {
+	        $selected_post_types = array('post');
+	    }
 
-		$post_types = get_post_types( array( 'public' => true ), 'names', 'and' );
+	    // Fetch public post types and exclude the 'attachment' (media) post type
+	    $post_types = get_post_types(array('public' => true), 'names', 'and');
+	    unset($post_types['attachment']); // Remove the 'attachment' post type
 
-		echo '<p>' . esc_html__( 'Select which post types OneClickContent - Titles should be enabled on:', 'occ_titles' ) . '</p>';
-		echo '<p><em>' . esc_html__( 'Custom post types must have titles enabled.', 'occ_titles' ) . '</em></p>';
+	    echo '<p>' . esc_html__('Select which post types OneClickContent - Titles should be enabled on:', 'occ_titles') . '</p>';
+	    echo '<p><em>' . esc_html__('Custom post types must have titles enabled.', 'occ_titles') . '</em></p>';
 
-		foreach ( $post_types as $post_type ) {
-			$checked         = in_array( $post_type, $selected_post_types, true ) ? 'checked' : '';
-			$post_type_label = str_replace( '_', ' ', ucwords( $post_type ) );
-			echo '<input type="checkbox" name="occ_titles_post_types[]" value="' . esc_attr( $post_type ) . '" class="occ_titles-settings-checkbox" ' . esc_attr( $checked ) . '> ' . esc_html( $post_type_label ) . '<br>';
-		}
+	    foreach ($post_types as $post_type) {
+	        $checked = in_array($post_type, $selected_post_types, true) ? 'checked' : '';
+	        $post_type_label = str_replace('_', ' ', ucwords($post_type));
+	        echo '<label class="toggle-switch">';
+	        echo '<input type="checkbox" name="occ_titles_post_types[]" value="' . esc_attr($post_type) . '" class="occ_titles-settings-checkbox" ' . esc_attr($checked) . '>';
+	        echo '<span class="slider"></span>';
+	        echo '</label>';
+	        echo '<span class="post-type-label">' . esc_html($post_type_label) . '</span><br>';
+	    }
+
 	}
+
 
 	/**
 	 * Callback for the settings section.

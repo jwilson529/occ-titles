@@ -1,14 +1,14 @@
 <?php
 /**
- * Class OpenAI_Helper
+ * Class Occ_Titles_OpenAI_Helper
  *
  * Handles interactions with the OpenAI API.
  *
  * @since 1.0.0
- * @package OpenAI_Helper
+ * @package Occ_Titles_OpenAI_Helper
  */
 
-class OpenAI_Helper {
+class Occ_Titles_OpenAI_Helper {
 
 	/**
 	 * Create a new thread in the OpenAI API.

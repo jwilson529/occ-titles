@@ -1,3 +1,4 @@
+/* Table Styles */
 #occ_titles_table {
     margin-top: 20px;
     width: 100%;
@@ -6,7 +7,8 @@
     text-align: center; /* Center all table data */
 }
 
-#occ_titles_table th, #occ_titles_table td {
+#occ_titles_table th,
+#occ_titles_table td {
     padding: 12px;
     text-align: center; /* Center text in table headers and cells */
     border-bottom: 1px solid #ddd;
@@ -20,9 +22,52 @@
     vertical-align: middle; /* Vertically center table data */
 }
 
+#occ_titles_table td.emoji {
+    font-size: 3em; /* Increase emoji size */
+}
+
+#occ_titles_table tr.best-title {
+    background-color: #e0ffe0;
+}
+
+#occ_titles_table td a {
+    color: #0073aa;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#occ_titles_table td a:hover {
+    text-decoration: underline;
+}
+
+/* Button Styles */
 #occ_titles_revert_button,
 #occ_titles_button {
     margin: 1rem 0;
+    background: #0073aa;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 4px;
+}
+
+#occ_titles_revert_button:hover,
+#occ_titles_button:hover {
+    background-color: #005177;
+}
+
+#occ_titles_revert_button:active,
+#occ_titles_button:active {
+    background-color: #00395a;
+}
+
+#occ_titles_revert_button:focus,
+#occ_titles_button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #005177;
 }
 
 /* Spinner Styles */
@@ -51,11 +96,14 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
-/* Spinner text */
 .occ-spinner-text {
     position: absolute;
     top: calc(50% + 80px);
@@ -64,27 +112,6 @@
     color: #fff;
     font-size: 2em; /* Increase font size */
     text-align: center;
-}
-
-/* Bigger emojis */
-#occ_titles_table td.emoji {
-    font-size: 3em; /* Increase emoji size */
-}
-
-/* Highlight best title row */
-#occ_titles_table tr.best-title {
-    background-color: #e0ffe0;
-}
-
-/* Customizing the title text */
-#occ_titles_table td a {
-    color: #0073aa;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-#occ_titles_table td a:hover {
-    text-decoration: underline;
 }
 
 /* General Styles for the Settings Page */
@@ -148,26 +175,59 @@
     background: #005177;
 }
 
-#occ_titles_revert_button {
-    background: #0073aa;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    display: inline-flex;
+/* Container for toggle switch and label */
+.toggle-switch-container {
+    display: flex;
     align-items: center;
+    margin-bottom: 10px;
 }
 
-#occ_titles_revert_button:hover {
-    background-color: #005177;
+/* Toggle Switch Styles */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin: 10px;
 }
 
-#occ_titles_revert_button:active {
-    background-color: #00395a;
+.toggle-switch input {
+    display: none;
 }
 
-#occ_titles_revert_button:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #005177;
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #0073aa;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.post-type-label {
+    font-weight: bold;
+    color: #333;
 }

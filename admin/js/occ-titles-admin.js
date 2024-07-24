@@ -6,6 +6,7 @@
         var originalTitle = '';
         var retryCount = 0;
         var maxRetries = 1;
+        var keywords = [];
 
         // Add spinner wrapper and text to the body
         $('body').append(`
@@ -17,6 +18,9 @@
 
         // Add revert button
         $('#titlediv').after('<button id="occ_titles_revert_button" style="display:none;">Revert Title</button>');
+
+        // Add keywords display area
+        $('#titlediv').after('<div id="occ_keywords_display" style="margin-top: 20px; font-weight: bold;"></div>');
 
         $('#occ_titles_button').click(function(e) {
             // Prevent the default form submission
@@ -54,6 +58,8 @@
                     $('#occ_titles_spinner_wrapper').fadeOut();
 
                     if (response.success) {
+                        keywords = response.data.keywords || [];
+                        displayKeywords(keywords);
                         displayTitles(response.data.titles);
                         $('#occ_titles_revert_button').show();
                     } else {
@@ -88,6 +94,15 @@
             }
         }
 
+        function displayKeywords(keywords) {
+            var keywordsDisplay = $('#occ_keywords_display');
+            if (keywords.length) {
+                keywordsDisplay.html('Keywords used in density calculation: ' + keywords.join(', '));
+            } else {
+                keywordsDisplay.html('No keywords generated.');
+            }
+        }
+
         function displayTitles(titles) {
             if (Array.isArray(titles)) {
                 var titlesTable = $('<table id="occ_titles_table" class="widefat fixed" cellspacing="0"><thead><tr><th>Title</th><th>Character Count</th><th>Style</th><th>SEO Grade</th><th>Sentiment</th><th>Keyword Density</th><th>Readability</th><th>Overall Score</th></tr></thead><tbody></tbody></table>');
@@ -99,7 +114,7 @@
                     var seoGrade = calculateSEOGrade(charCount);
                     var sentiment = title.sentiment;
                     var sentimentEmoji = getEmojiForSentiment(sentiment);
-                    var keywordDensity = calculateKeywordDensity(title.text, 'AI'); // Replace 'AI' with the actual keyword
+                    var keywordDensity = calculateKeywordDensity(title.text, keywords); // Use the generated keywords
                     var readabilityScore = calculateReadabilityScore(title.text);
                     var overallScore = calculateOverallScore(seoGrade.score, sentiment, keywordDensity, readabilityScore);
 
@@ -120,8 +135,8 @@
 
                     var charCountCell = $('<td></td>').text(charCount);
                     var styleCell = $('<td></td>').text(title.style);
-                    var seoGradeCell = $('<td class="emoji"></td>').html(seoGrade.dot);
-                    var sentimentCell = $('<td class="emoji"></td>').text(sentimentEmoji);
+                    var seoGradeCell = $('<td class="emoji"></td>').html(seoGrade.dot).attr('title', seoGrade.label);
+                    var sentimentCell = $('<td class="emoji"></td>').text(sentimentEmoji).attr('title', sentiment);
                     var keywordDensityCell = $('<td></td>').text((keywordDensity * 100).toFixed(2) + '%');
                     var readabilityCell = $('<td></td>').text(readabilityScore.toFixed(2));
                     var overallScoreCell = $('<td></td>').text(overallScore.toFixed(2));
@@ -148,19 +163,23 @@
         function calculateSEOGrade(charCount) {
             var grade = '';
             var score = 0;
+            var label = '';
 
             if (charCount >= 50 && charCount <= 60) {
                 grade = '🟢';
                 score = 100;
+                label = 'Excellent (50-60 characters)';
             } else if (charCount < 50) {
                 grade = '🟡';
                 score = 75;
+                label = 'Average (below 50 characters)';
             } else {
                 grade = '🔴';
                 score = 50;
+                label = 'Poor (above 60 characters)';
             }
 
-            return { dot: grade, score: score };
+            return { dot: grade, score: score, label: label };
         }
 
         function getEmojiForSentiment(sentiment) {
@@ -176,8 +195,14 @@
             }
         }
 
-        function calculateKeywordDensity(text, keyword) {
-            var keywordCount = (text.match(new RegExp(keyword, 'gi')) || []).length;
+        function calculateKeywordDensity(text, keywords) {
+            if (!keywords || !keywords.length) {
+                return 0;
+            }
+
+            var keywordCount = keywords.reduce(function(count, keyword) {
+                return count + (text.match(new RegExp(keyword, 'gi')) || []).length;
+            }, 0);
             var wordCount = text.split(' ').length;
             return keywordCount / wordCount;
         }
