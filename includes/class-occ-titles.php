@@ -84,7 +84,7 @@ class Occ_Titles {
 	 * Include the following files that make up the plugin:
 	 *
 	 * - Occ_Titles_Loader. Orchestrates the hooks of the plugin.
-	 * - Occ_Titles_i18n. Defines internationalization functionality.
+	 * - Occ_Titles_I18n. Defines internationalization functionality.
 	 * - Occ_Titles_Admin. Defines all hooks for the admin area.
 	 * - Occ_Titles_Public. Defines all hooks for the public side of the site.
 	 *
@@ -106,7 +106,7 @@ class Occ_Titles {
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-occ-titles-admin.php';
 
 		// The class responsible for defining AI helper actions that occur in the admin area.
-		require_once plugin_dir_path( __DIR__ ) . 'admin/class-occ-titles-ai-helper.php';
+		require_once plugin_dir_path( __DIR__ ) . 'admin/class-occ-titles-openai-helper.php';
 
 		// The class responsible for defining settings actions that occur in the admin area.
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-occ-titles-settings.php';
@@ -120,7 +120,7 @@ class Occ_Titles {
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * Uses the Occ_Titles_i18n class in order to set the domain and to register the hook
+	 * Uses the Occ_Titles_I18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
@@ -128,7 +128,7 @@ class Occ_Titles {
 	 */
 	private function set_locale() {
 
-		$plugin_i18n = new Occ_Titles_i18n();
+		$plugin_i18n = new Occ_Titles_I18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 	}
@@ -152,8 +152,6 @@ class Occ_Titles {
 		$this->loader->add_action( 'wp_ajax_occ_titles_generate_titles', $plugin_admin, 'generate_titles' );
 
 		$this->loader->add_action( 'admin_init', $plugin_settings, 'occ_titles_handle_assistant_creation' );
-		
-
 	}
 
 	/**

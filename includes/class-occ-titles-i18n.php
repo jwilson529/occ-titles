@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Define the internationalization functionality
  *
@@ -24,7 +23,7 @@
  * @subpackage Occ_Titles/includes
  * @author     James Wilson <info@oneclickcontent.com>
  */
-class Occ_Titles_i18n {
+class Occ_Titles_I18n {
 
 
 	/**

@@ -5,8 +5,8 @@
  * @link       https://oneclickcontent.com
  * @since      1.0.0
  *
- * @package    Speak_Easy
- * @subpackage Speak_Easy/admin
+ * @package    Occ_Titles
+ * @subpackage Occ_Titles/admin
  */
 
 /**
@@ -14,8 +14,8 @@
  *
  * Defines the plugin name, version, and methods for interacting with the OpenAI API.
  *
- * @package    Speak_Easy
- * @subpackage Speak_Easy/admin
+ * @package    Occ_Titles
+ * @subpackage Occ_Titles/admin
  * @author     James Wilson <info@oneclickcontent.com>
  */
 class Occ_Titles_OpenAI_Helper {
@@ -299,4 +299,3 @@ class Occ_Titles_OpenAI_Helper {
 		return 'Run cancelled successfully.';
 	}
 }
-?>
