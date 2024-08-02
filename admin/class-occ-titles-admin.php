@@ -129,41 +129,78 @@ class Occ_Titles_Admin {
 	 *
 	 * @since 1.0.0
 	 */
+	/**
+	 * Generate titles using OpenAI.
+	 *
+	 * @since 1.0.0
+	 */
 	public function generate_titles() {
-		// Check nonce for security
-		check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce' );
+	    // Log that the AJAX request was received
+	    error_log('AJAX request received.');
 
-		// Verify the user has the appropriate capability
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => 'Permission denied.' ) );
-		}
+	    // Check nonce for security
+	    if (!check_ajax_referer('occ_titles_ajax_nonce', 'nonce', false)) {
+	        error_log('Nonce verification failed.');
+	        wp_send_json_error(array('message' => 'Nonce verification failed.'));
+	    }
+	    error_log('Nonce verification passed.');
 
-		// Sanitize and get incoming data
-		$content      = isset( $_POST['content'] ) ? sanitize_text_field( wp_unslash( $_POST['content'] ) ) : '';
-		$style        = isset( $_POST['style'] ) ? sanitize_text_field( wp_unslash( $_POST['style'] ) ) : 'default';
-		$api_key      = get_option( 'occ_titles_openai_api_key' );
-		$assistant_id = get_option( 'occ_titles_assistant_id' );
+	    // Verify the user has the appropriate capability
+	    if (!current_user_can('edit_posts')) {
+	        error_log('Permission denied.');
+	        wp_send_json_error(array('message' => 'Permission denied.'));
+	    }
+	    error_log('User capability verified.');
 
-		// Check for missing data
-		if ( empty( $content ) || empty( $api_key ) || empty( $assistant_id ) ) {
-			wp_send_json_error( array( 'message' => 'Missing data.' ) );
-		}
+	    // Sanitize and get incoming data
+	    $content = isset($_POST['content']) ? sanitize_text_field(wp_unslash($_POST['content'])) : '';
+	    $style = isset($_POST['style']) ? sanitize_text_field(wp_unslash($_POST['style'])) : 'default';
+	    $api_key = get_option('occ_titles_openai_api_key');
+	    $assistant_id = get_option('occ_titles_assistant_id');
 
-		// Step 1: Create a new thread
-		$thread_id = $this->openai_helper->create_thread( $api_key );
-		if ( ! $thread_id ) {
-			wp_send_json_error( array( 'message' => 'Failed to create thread.' ) );
-		}
+	    // Log the data being sent to the assistant
+	    error_log('Content: ' . $content);
+	    error_log('Style: ' . $style);
+	    error_log('API Key: ' . ($api_key ? 'Exists' : 'Missing'));
+	    error_log('Assistant ID: ' . ($assistant_id ? 'Exists' : 'Missing'));
 
-		// Modify the query with the selected style
-		$query = $content . "\n\nStyle: " . ucfirst( $style );
+	    // Check for missing data
+	    if (empty($content) || empty($api_key) || empty($assistant_id)) {
+	        error_log('Missing data.');
+	        wp_send_json_error(array('message' => 'Missing data.'));
+	    }
 
-		// Step 2: Add message and run thread
-		$result = $this->openai_helper->add_message_and_run_thread( $api_key, $thread_id, $assistant_id, $query );
-		if ( is_string( $result ) ) {
-			wp_send_json_error( array( 'message' => $result ) );
-		} else {
-			wp_send_json_success( $result );
-		}
+	    // Step 1: Create a new thread
+	    $thread_id = $this->openai_helper->create_thread($api_key);
+	    if (!$thread_id) {
+	        error_log('Failed to create thread.');
+	        wp_send_json_error(array('message' => 'Failed to create thread.'));
+	    }
+	    error_log('Thread ID: ' . $thread_id);
+
+	    // Modify the query with the selected style
+	    $query = $content . "\n\nStyle: " . ucfirst($style);
+
+	    // Step 2: Add message and run thread
+	    $result = $this->openai_helper->add_message_and_run_thread($api_key, $thread_id, $assistant_id, $query);
+	    if (is_string($result)) {
+	        error_log('Add message and run thread error: ' . $result);
+	        wp_send_json_error(array('message' => $result));
+	    } else {
+	        // Log the response to inspect it
+	        error_log('Response from OpenAI: ' . print_r($result, true));
+
+	        // Ensure 'titles' is in the response
+	        if (isset($result['titles'])) {
+	            wp_send_json_success($result);
+	        } else {
+	            error_log('Unexpected response format.');
+	            wp_send_json_error(array('message' => 'Unexpected response format.'));
+	        }
+	    }
 	}
+
+
+
+
 }

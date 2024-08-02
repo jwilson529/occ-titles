@@ -1,13 +1,23 @@
 <?php
 /**
- * Class Occ_Titles_OpenAI_Helper
+ * The admin-specific functionality of the plugin.
  *
- * Handles interactions with the OpenAI API.
+ * @link       https://oneclickcontent.com
+ * @since      1.0.0
  *
- * @since 1.0.0
- * @package Occ_Titles_OpenAI_Helper
+ * @package    Speak_Easy
+ * @subpackage Speak_Easy/admin
  */
 
+/**
+ * The admin-specific functionality of the plugin concerning settings.
+ *
+ * Defines the plugin name, version, and methods for interacting with the OpenAI API.
+ *
+ * @package    Speak_Easy
+ * @subpackage Speak_Easy/admin
+ * @author     James Wilson <info@oneclickcontent.com>
+ */
 class Occ_Titles_OpenAI_Helper {
 
 	/**
@@ -181,22 +191,12 @@ class Occ_Titles_OpenAI_Helper {
 			$tool_outputs = array();
 
 			foreach ( $tool_calls as $tool_call ) {
-				$output = '';
-				if ( 'function' === $tool_call['type'] ) {
-					switch ( $tool_call['function']['name'] ) {
-						case 'generate_word_list':
-							$output = ''; // Need to determine from the response
-							break;
-						default:
-							$output = wp_json_encode( array( 'success' => 'true' ) );
-							break;
-					}
+				$output = wp_json_encode( array( 'success' => 'true' ) );
 
-					$tool_outputs[] = array(
-						'tool_call_id' => $tool_call['id'],
-						'output'       => $output,
-					);
-				}
+				$tool_outputs[] = array(
+					'tool_call_id' => $tool_call['id'],
+					'output'       => $output,
+				);
 			}
 
 			$submit_tool_outputs_url = "https://api.openai.com/v1/threads/{$thread_id}/runs/{$run_id}/submit_tool_outputs";
@@ -299,3 +299,4 @@ class Occ_Titles_OpenAI_Helper {
 		return 'Run cancelled successfully.';
 	}
 }
+?>

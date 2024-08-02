@@ -2,11 +2,9 @@
     'use strict';
 
     $(document).ready(function() {
-        
         var originalTitle = '';
         var retryCount = 0;
         var maxRetries = 1;
-        var keywords = [];
 
         // Add spinner wrapper and text to the body
         $('body').append(`
@@ -23,19 +21,13 @@
         $('#titlediv').after('<div id="occ_keywords_display" style="margin-top: 20px; font-weight: bold;"></div>');
 
         $('#occ_titles_button').click(function(e) {
-            // Prevent the default form submission
             e.preventDefault();
 
-            // Save the original title
             originalTitle = $('#editor').length ? wp.data.select('core/editor').getEditedPostAttribute('title') : $('input#title').val();
-
             var content = $('#editor').length ? wp.data.select('core/editor').getEditedPostContent() : $('textarea#content').val();
             var nonce = occ_titles_admin_vars.occ_titles_ajax_nonce;
 
-            // Show spinner
             $('#occ_titles_spinner_wrapper').fadeIn();
-
-            // Reset retry count
             retryCount = 0;
             sendAjaxRequest(content, nonce);
         });
@@ -44,6 +36,7 @@
             setTitleInEditor(originalTitle);
         });
 
+        // AJAX request function
         function sendAjaxRequest(content, nonce) {
             $.ajax({
                 url: occ_titles_admin_vars.ajax_url,
@@ -54,14 +47,23 @@
                     nonce: nonce
                 },
                 success: function(response) {
-                    // Hide spinner
                     $('#occ_titles_spinner_wrapper').fadeOut();
 
                     if (response.success) {
-                        keywords = response.data.keywords || [];
+                        var titles = response.data.titles || [];  // Handle missing titles
+
+                        // Extract keywords from all titles
+                        var keywords = extractKeywordsFromTitles(titles);
+                        console.log('Extracted Keywords:', keywords);
+
+                        // Display keywords and titles in the UI
                         displayKeywords(keywords);
-                        displayTitles(response.data.titles);
-                        $('#occ_titles_revert_button').show();
+                        displayTitles(titles);
+
+                        // Show the revert button if titles were generated
+                        if (titles.length > 0) {
+                            $('#occ_titles_revert_button').show();
+                        }
                     } else {
                         handleAjaxError(response.data.message);
                     }
@@ -70,6 +72,16 @@
                     handleAjaxError('Error generating titles.');
                 }
             });
+        }
+
+        function extractKeywordsFromTitles(titles) {
+            var allKeywords = [];
+            titles.forEach(function(title) {
+                if (title.keywords && Array.isArray(title.keywords)) {
+                    allKeywords = allKeywords.concat(title.keywords);
+                }
+            });
+            return allKeywords;
         }
 
         function handleAjaxError(errorMessage) {
@@ -114,7 +126,7 @@
                     var seoGrade = calculateSEOGrade(charCount);
                     var sentiment = title.sentiment;
                     var sentimentEmoji = getEmojiForSentiment(sentiment);
-                    var keywordDensity = calculateKeywordDensity(title.text, keywords); // Use the generated keywords
+                    var keywordDensity = calculateKeywordDensity(title.text, title.keywords || []);
                     var readabilityScore = calculateReadabilityScore(title.text);
                     var overallScore = calculateOverallScore(seoGrade.score, sentiment, keywordDensity, readabilityScore);
 
@@ -123,34 +135,30 @@
                     }
 
                     var titleRow = $('<tr></tr>');
-
                     var titleCell = $('<td></td>').append($('<a href="#">').text(title.text).click(function(e) {
                         e.preventDefault();
                         $('#occ_titles_table a').css('font-weight', 'normal');
                         $(this).css('font-weight', 'bold');
-
-                        // Set the selected title
                         setTitleInEditor(title.text);
                     }));
 
-                    var charCountCell = $('<td></td>').text(charCount);
-                    var styleCell = $('<td></td>').text(title.style);
-                    var seoGradeCell = $('<td class="emoji"></td>').html(seoGrade.dot).attr('title', seoGrade.label);
-                    var sentimentCell = $('<td class="emoji"></td>').text(sentimentEmoji).attr('title', sentiment);
-                    var keywordDensityCell = $('<td></td>').text((keywordDensity * 100).toFixed(2) + '%');
-                    var readabilityCell = $('<td></td>').text(readabilityScore.toFixed(2));
-                    var overallScoreCell = $('<td></td>').text(overallScore.toFixed(2));
+                    titleRow.append(
+                        titleCell,
+                        $('<td></td>').text(charCount),
+                        $('<td></td>').text(title.style),
+                        $('<td class="emoji"></td>').html(seoGrade.dot).attr('title', seoGrade.label),
+                        $('<td class="emoji"></td>').text(sentimentEmoji).attr('title', sentiment),
+                        $('<td></td>').text((keywordDensity * 100).toFixed(2) + '%'),
+                        $('<td></td>').text(readabilityScore.toFixed(2)),
+                        $('<td></td>').text(overallScore.toFixed(2))
+                    );
 
-                    titleRow.append(titleCell, charCountCell, styleCell, seoGradeCell, sentimentCell, keywordDensityCell, readabilityCell, overallScoreCell);
                     tableBody.append(titleRow);
                 });
 
-                // Highlight the best title
                 tableBody.find('tr').each(function() {
-                    var row = $(this);
-                    var title = row.find('a').text();
-                    if (title === bestTitle.title) {
-                        row.css('background-color', '#d4edda');
+                    if ($(this).find('a').text() === bestTitle.title) {
+                        $(this).css('background-color', '#d4edda');
                     }
                 });
 
@@ -208,7 +216,6 @@
         }
 
         function calculateReadabilityScore(text) {
-            // Simplified readability score calculation (e.g., Flesch-Kincaid, Gunning Fog Index)
             var wordCount = text.split(' ').length;
             var sentenceCount = text.split(/[.!?]+/).length;
             var syllableCount = text.split(/[aeiouy]+/).length;
@@ -219,7 +226,7 @@
         function calculateOverallScore(seoScore, sentiment, keywordDensity, readabilityScore) {
             var sentimentScore = sentiment === 'Positive' ? 100 : (sentiment === 'Neutral' ? 75 : 50);
             var keywordDensityScore = keywordDensity >= 0.01 && keywordDensity <= 0.03 ? 100 : 50;
-            var readabilityScoreNormalized = 100 - Math.abs(readabilityScore - 10) * 10; // Assuming ideal readability score is 10
+            var readabilityScoreNormalized = 100 - Math.abs(readabilityScore - 10) * 10;
 
             return (seoScore + sentimentScore + keywordDensityScore + readabilityScoreNormalized) / 4;
         }
