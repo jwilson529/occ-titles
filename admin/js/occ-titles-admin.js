@@ -154,7 +154,7 @@
 
             originalTitle = $('#editor').length ? wp.data.select('core/editor').getEditedPostAttribute('title') : $('input#title').val();
             var content = $('#editor').length ? wp.data.select('core/editor').getEditedPostContent() : $('textarea#content').val();
-            var style = $('#occ_titles_style_dropdown').is(':visible') ? $('#occ_titles_style_dropdown').val() : null; // Get the selected style, if any
+            var style = $('#occ_titles_style_dropdown').val() || ''; // Get the selected style, or empty if not selected
             var nonce = occ_titles_admin_vars.occ_titles_ajax_nonce;
 
             $('#occ_titles_spinner_wrapper').fadeIn();
@@ -162,8 +162,12 @@
             sendAjaxRequest(content, style, nonce);
         });
 
+
+
         // Event handler for the revert title button
-        $('#occ_titles_revert_button').click(function() {
+        $('#occ_titles_revert_button').click(function(e) {
+            e.preventDefault(); // Prevent the default button click behavior
+
             setTitleInEditor(originalTitle);
         });
 
@@ -171,7 +175,7 @@
          * Send AJAX request to generate titles based on post content and selected style.
          *
          * @param {string} content The content of the post.
-         * @param {string|null} style The selected style for title generation or null to auto-detect.
+         * @param {string} style The selected style for title generation.
          * @param {string} nonce The AJAX nonce for security.
          */
         function sendAjaxRequest(content, style, nonce) {
@@ -181,7 +185,7 @@
                 data: {
                     action: 'occ_titles_generate_titles',
                     content: content,
-                    style: style, // Include the selected style in the request, if any
+                    style: style, // Include the selected style in the request
                     nonce: nonce
                 },
                 success: function(response) {
@@ -195,10 +199,9 @@
                         displayKeywords(keywords);
                         displayTitles(titles);
 
-                        // Show the revert button and style dropdown if titles were generated
+                        // Show the revert button if titles were generated
                         if (titles.length > 0) {
                             $('#occ_titles_revert_button').show();
-                            $('.occ_titles_style_label, .occ_titles_style_dropdown').show(); // Show the style dropdown and label
                         }
                     } else {
                         handleAjaxError(response.data.message);
@@ -209,7 +212,6 @@
                 }
             });
         }
-
         /**
          * Extract keywords from an array of titles.
          *

@@ -219,106 +219,94 @@ class Occ_Titles_Settings {
 	 * @return string|bool The Assistant ID if successful, false otherwise.
 	 */
 	private function occ_titles_create_assistant() {
-		$api_key = get_option( 'occ_titles_openai_api_key' );
+	    $api_key = get_option( 'occ_titles_openai_api_key' );
 
-		if ( empty( $api_key ) ) {
-			return false;
-		}
+	    if ( empty( $api_key ) ) {
+	        return false;
+	    }
 
-		// Initial prompt with dynamic style determination
-		$initial_prompt = array(
-			'description' => esc_html__( 'You are an SEO expert and content writer. Your task is to generate five SEO-optimized titles for a given text. Each title should be engaging, include relevant keywords, and be between 50-60 characters long. Additionally, analyze the sentiment of each title and include it in the response. Based on the content, choose the most suitable style for each title from the following options: How-To, Listicle, Question, Command, Intriguing Statement, News Headline, Comparison, Benefit-Oriented, Storytelling, and Problem-Solution. The response must adhere to the provided JSON Schema.', 'occ_titles' ),
-			'behavior'    => array(
-				array(
-					'trigger'     => 'message',
-					'instruction' => esc_html__( "When provided with a message containing the content of an article, you must call the `generate_5_titles_with_styles_and_keywords` function. This function will generate five SEO-optimized titles. Each title must include relevant keywords, sentiment analysis ('Positive', 'Negative', or 'Neutral'), and a different style from the following: How-To, Listicle, Question, Command, Intriguing Statement, News Headline, Comparison, Benefit-Oriented, Storytelling, and Problem-Solution. The expected JSON format is:\n[\n  { \"index\": 1, \"text\": \"Title 1 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 2, \"text\": \"Title 2 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 3, \"text\": \"Title 3 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 4, \"text\": \"Title 4 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 5, \"text\": \"Title 5 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] }\n]. Ensure the response is in this exact format.", 'occ_titles' ),
-				),
-			),
-		);
+	    // Initial prompt with dynamic style determination or user-selected style
+	    $initial_prompt = array(
+	        'description' => esc_html__( 'You are an SEO expert and content writer. Your task is to generate five SEO-optimized titles for a given text. Each title should be engaging, include relevant keywords, and be between 50-60 characters long. Additionally, analyze the sentiment of each title and include it in the response. If a style is provided, use it for all titles; otherwise, choose the most suitable style from the following options: How-To, Listicle, Question, Command, Intriguing Statement, News Headline, Comparison, Benefit-Oriented, Storytelling, and Problem-Solution. The response must adhere to the provided JSON Schema.', 'occ_titles' ),
+	        'behavior'    => array(
+	            array(
+	                'trigger'     => 'message',
+	                'instruction' => esc_html__( "When provided with a message containing the content of an article, and an optional style parameter, you must call the `generate_5_titles_with_styles_and_keywords` function. This function will generate five SEO-optimized titles. Each title must include relevant keywords, sentiment analysis ('Positive', 'Negative', or 'Neutral'), and either the provided style or a chosen style. The expected JSON format is:\n[\n  { \"index\": 1, \"text\": \"Title 1 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 2, \"text\": \"Title 2 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 3, \"text\": \"Title 3 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 4, \"text\": \"Title 4 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 5, \"text\": \"Title 5 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] }\n]. Ensure the response is in this exact format.", 'occ_titles' ),
+	            ),
+	        ),
+	    );
 
-		$function_definition = array(
-			'name'        => 'generate_5_titles_with_styles_and_keywords',
-			'description' => esc_html__( 'Generate five titles that are search engine optimized for length and copy from the provided article content, including sentiment analysis, style, and relevant keywords, and return them in a specific JSON format.', 'occ_titles' ),
-			'parameters'  => array(
-				'type'       => 'object',
-				'properties' => array(
-					'titles' => array(
-						'type'  => 'array',
-						'items' => array(
-							'type'       => 'object',
-							'properties' => array(
-								'index'     => array(
-									'type'        => 'integer',
-									'description' => esc_html__( 'The index of the title.', 'occ_titles' ),
-								),
-								'text'      => array(
-									'type'        => 'string',
-									'description' => esc_html__( 'The content of the title.', 'occ_titles' ),
-								),
-								'style'     => array(
-									'type'        => 'string',
-									'description' => esc_html__( 'The style of the title.', 'occ_titles' ),
-								),
-								'sentiment' => array(
-									'type'        => 'string',
-									'description' => esc_html__( 'The sentiment of the title.', 'occ_titles' ),
-								),
-								'keywords'  => array(
-									'type'        => 'array',
-									'items'       => array(
-										'type' => 'string',
-									),
-									'description' => esc_html__( 'A list of relevant keywords used in the title.', 'occ_titles' ),
-								),
-							),
-							'required'   => array( 'index', 'text', 'style', 'sentiment', 'keywords' ),
-						),
-					),
-				),
-				'required'   => array( 'titles' ),
-			),
-		);
+	    $function_definition = array(
+	        'name'        => 'generate_5_titles_with_styles_and_keywords',
+	        'description' => esc_html__( 'Generate five titles that are search engine optimized for length and copy from the provided article content, including sentiment analysis, style, and relevant keywords, and return them in a specific JSON format.', 'occ_titles' ),
+	        'parameters'  => array(
+	            'type'       => 'object',
+	            'properties' => array(
+	                'content' => array(
+	                    'type'        => 'string',
+	                    'description' => esc_html__( 'The content of the article for which titles are being generated.', 'occ_titles' ),
+	                ),
+	                'style'   => array(
+	                    'type'        => 'string',
+	                    'description' => esc_html__( 'The style of the titles to be generated. If not provided, the assistant will choose the most suitable style.', 'occ_titles' ),
+	                    'enum'        => array(
+	                        'How-To',
+	                        'Listicle',
+	                        'Question',
+	                        'Command',
+	                        'Intriguing Statement',
+	                        'News Headline',
+	                        'Comparison',
+	                        'Benefit-Oriented',
+	                        'Storytelling',
+	                        'Problem-Solution',
+	                    ),
+	                ),
+	            ),
+	            'required'   => array( 'content' ), // 'style' is optional
+	        ),
+	    );
 
-		$payload = array(
-			'description'     => esc_html__( 'Assistant for generating SEO-optimized titles.', 'occ_titles' ),
-			'instructions'    => wp_json_encode( $initial_prompt ),
-			'name'            => esc_html__( 'OneClickContent - Titles Assistant', 'occ_titles' ),
-			'tools'           => array(
-				array(
-					'type'     => 'function',
-					'function' => $function_definition,
-				),
-			),
-			'model'           => 'gpt-4o',
-			'response_format' => array( 'type' => 'json_object' ),
-		);
+	    $payload = array(
+	        'description'     => esc_html__( 'Assistant for generating SEO-optimized titles.', 'occ_titles' ),
+	        'instructions'    => wp_json_encode( $initial_prompt ),
+	        'name'            => esc_html__( 'OneClickContent - Titles Assistant', 'occ_titles' ),
+	        'tools'           => array(
+	            array(
+	                'type'     => 'function',
+	                'function' => $function_definition,
+	            ),
+	        ),
+	        'model'           => 'gpt-4o',
+	        'response_format' => array( 'type' => 'json_object' ),
+	    );
 
-		$response = wp_remote_post(
-			'https://api.openai.com/v1/assistants',
-			array(
-				'headers' => array(
-					'Content-Type'  => 'application/json',
-					'Authorization' => 'Bearer ' . $api_key,
-					'OpenAI-Beta'   => 'assistants=v2',
-				),
-				'body'    => wp_json_encode( $payload ),
-			)
-		);
+	    $response = wp_remote_post(
+	        'https://api.openai.com/v1/assistants',
+	        array(
+	            'headers' => array(
+	                'Content-Type'  => 'application/json',
+	                'Authorization' => 'Bearer ' . $api_key,
+	                'OpenAI-Beta'   => 'assistants=v2',
+	            ),
+	            'body'    => wp_json_encode( $payload ),
+	        )
+	    );
 
-		if ( is_wp_error( $response ) ) {
-			error_log( 'Assistant creation error: ' . $response->get_error_message() ); // Debugging line.
-			return false;
-		}
+	    if ( is_wp_error( $response ) ) {
+	        error_log( 'Assistant creation error: ' . $response->get_error_message() ); // Debugging line.
+	        return false;
+	    }
 
-		$response_body  = wp_remote_retrieve_body( $response );
-		$assistant_data = json_decode( $response_body, true );
+	    $response_body  = wp_remote_retrieve_body( $response );
+	    $assistant_data = json_decode( $response_body, true );
 
-		if ( isset( $assistant_data['id'] ) ) {
-			return $assistant_data['id'];
-		} else {
-			error_log( 'Failed to create assistant, response: ' . print_r( $assistant_data, true ) ); // Debugging line.
-			return false;
-		}
+	    if ( isset( $assistant_data['id'] ) ) {
+	        return $assistant_data['id'];
+	    } else {
+	        error_log( 'Failed to create assistant, response: ' . print_r( $assistant_data, true ) ); // Debugging line.
+	        return false;
+	    }
 	}
 
 
