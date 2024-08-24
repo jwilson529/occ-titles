@@ -41,7 +41,7 @@ define( 'OCC_TITLES_VERSION', '1.0.0' );
  * The code that runs during plugin activation.
  * This action is documented in includes/class-occ-titles-activator.php
  */
-function activate_occ_titles() {
+function occ_titles_activate() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-occ-titles-activator.php';
 	Occ_Titles_Activator::activate();
 }
@@ -50,13 +50,13 @@ function activate_occ_titles() {
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-occ-titles-deactivator.php
  */
-function deactivate_occ_titles() {
+function occ_titles_deactivate() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-occ-titles-deactivator.php';
 	Occ_Titles_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_occ_titles' );
-register_deactivation_hook( __FILE__, 'deactivate_occ_titles' );
+register_activation_hook( __FILE__, 'occ_titles_activate' );
+register_deactivation_hook( __FILE__, 'occ_titles_deactivate' );
 
 /**
  * The core plugin class that is used to define internationalization,
@@ -73,9 +73,9 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-occ-titles.php';
  *
  * @since    1.0.0
  */
-function run_occ_titles() {
+function occ_titles_run() {
 
 	$plugin = new Occ_Titles();
 	$plugin->run();
 }
-run_occ_titles();
+occ_titles_run();

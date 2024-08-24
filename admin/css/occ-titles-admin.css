@@ -42,7 +42,8 @@
 
 /* Button Styles */
 #occ_titles_revert_button,
-#occ_titles_button {
+#occ_titles_button,
+#occ_titles_create_assistant {
     margin: 1rem 0;
     background: #0073aa;
     color: #fff;
@@ -55,17 +56,20 @@
 }
 
 #occ_titles_revert_button:hover,
-#occ_titles_button:hover {
+#occ_titles_button:hover,
+#occ_titles_create_assistant:hover {
     background-color: #005177;
 }
 
 #occ_titles_revert_button:active,
-#occ_titles_button:active {
+#occ_titles_button:active,
+#occ_titles_create_assistant:active {
     background-color: #00395a;
 }
 
 #occ_titles_revert_button:focus,
-#occ_titles_button:focus {
+#occ_titles_button:focus,
+#occ_titles_create_assistant:focus {
     outline: none;
     box-shadow: 0 0 0 2px #005177;
 }
@@ -231,3 +235,107 @@ input:checked + .slider:before {
     font-weight: bold;
     color: #333;
 }
+
+/* Notification Styles */
+.occ_titles-notification {
+    position: fixed;
+    top: 40px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #0073aa;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    display: none; /* Hidden by default */
+}
+
+.occ_titles-notification.success {
+    background-color: #28a745; /* Success - Green */
+}
+
+.occ_titles-notification.error {
+    background-color: #dc3545; /* Error - Red */
+}
+
+/* Animation for Notification */
+.occ_titles-notification.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+
+.occ_titles-notification.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+/* Adjusted Dropdown and Button Styles */
+#occ_titles--controls-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.occ_titles_style_label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.occ_titles_style_dropdown {
+    padding: 8px; /* Padding to match the button */
+    height: 38px; /* Ensure height matches the button */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    margin-right: 10px; /* Space between dropdown and button */
+}
+
+#occ_titles_button {
+    height: 38px; /* Ensure height matches the dropdown */
+    padding: 8px 20px;
+    background: #0073aa;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 4px;
+}
+
+#occ_titles_button:hover {
+    background-color: #005177;
+}
+
+#occ_titles_button:active {
+    background-color: #00395a;
+}
+
+#occ_titles_button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #005177;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+

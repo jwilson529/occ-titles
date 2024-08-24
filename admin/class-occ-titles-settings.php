@@ -2,6 +2,8 @@
 /**
  * The admin-specific functionality of the plugin.
  *
+ * Handles the settings and assistant creation for OneClickContent - Titles.
+ *
  * @link       https://oneclickcontent.com
  * @since      1.0.0
  *
@@ -12,13 +14,14 @@
 /**
  * Class Occ_Titles_Settings
  *
- * Handles the settings and assistant creation for OneClickContent - Titles.
+ * Manages the settings page and assistant creation for the OneClickContent - Titles plugin.
  */
 class Occ_Titles_Settings {
 
 	/**
 	 * Registers the settings page under the options menu.
 	 *
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function occ_titles_register_options_page() {
@@ -34,6 +37,7 @@ class Occ_Titles_Settings {
 	/**
 	 * Outputs the settings page content.
 	 *
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function occ_titles_options_page() {
@@ -43,14 +47,7 @@ class Occ_Titles_Settings {
 				<?php
 				settings_fields( 'occ_titles_settings' );
 				do_settings_sections( 'occ_titles_settings' );
-				submit_button();
 				?>
-			</form>
-
-			<!-- Manual Assistant Creation Button -->
-			<form method="post" action="">
-				<?php wp_nonce_field( 'occ_titles_create_assistant_action', 'occ_titles_create_assistant_nonce' ); ?>
-				<input type="submit" name="occ_titles_create_assistant" id="occ_titles_create_assistant" class="button button-primary" value="<?php esc_attr_e( 'Create Assistant', 'occ_titles' ); ?>">
 			</form>
 		</div>
 		<?php
@@ -59,10 +56,15 @@ class Occ_Titles_Settings {
 	/**
 	 * Registers the settings and their fields.
 	 *
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function occ_titles_register_settings() {
-		register_setting( 'occ_titles_settings', 'occ_titles_openai_api_key', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting(
+			'occ_titles_settings',
+			'occ_titles_openai_api_key',
+			array( 'sanitize_callback' => 'sanitize_text_field' )
+		);
 
 		add_settings_section(
 			'occ_titles_settings_section',
@@ -103,28 +105,31 @@ class Occ_Titles_Settings {
 				'occ_titles_settings_section',
 				array( 'label_for' => 'occ_titles_assistant_id' )
 			);
-		} else {
-			add_settings_error(
-				'occ_titles_openai_api_key',
-				'invalid-api-key',
-				__( 'The OpenAI API key is invalid. Please enter a valid API key in the OneClickContent - Titles settings to use OneClickContent - Titles.', 'occ_titles' ) . ' ' .
-				'<a href="' . esc_url( admin_url( 'options-general.php?page=occ_titles-settings' ) ) . '">' . __( 'Settings', 'occ_titles' ) . '</a>',
-				'error'
-			);
-
+		} elseif ( ! get_settings_errors( 'invalid-api-key' ) ) {
+				add_settings_error(
+					'occ_titles_openai_api_key',
+					'invalid-api-key',
+					__( 'The OpenAI API key is invalid. Please enter a valid API key in the OneClickContent - Titles settings to use OneClickContent - Titles.', 'occ_titles' ) . ' ' .
+					'<a href="' . esc_url( admin_url( 'options-general.php?page=occ_titles-settings' ) ) . '">' . __( 'Settings', 'occ_titles' ) . '</a>',
+					'error'
+				);
 		}
 	}
 
 	/**
 	 * Callback function for the Assistant ID setting field.
 	 *
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function occ_titles_assistant_id_callback() {
 		$value = get_option( 'occ_titles_assistant_id', '' );
 
 		if ( empty( $value ) ) {
-			$value = esc_html__( 'Assistant not created yet', 'occ_titles' );
+			$value = $this->occ_titles_create_assistant();
+			if ( $value ) {
+				update_option( 'occ_titles_assistant_id', $value );
+			}
 		}
 
 		echo '<input type="text" id="occ_titles_assistant_id" name="occ_titles_assistant_id" value="' . esc_attr( $value ) . '" />';
@@ -134,10 +139,12 @@ class Occ_Titles_Settings {
 	/**
 	 * Callback function for the Post Types setting field.
 	 *
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function occ_titles_post_types_callback() {
-		$selected_post_types = get_option( 'occ_titles_post_types', array( 'post' ) );
+		// Ensure $selected_post_types is always an array
+		$selected_post_types = (array) get_option( 'occ_titles_post_types', array( 'post' ) );
 		$post_types          = get_post_types( array( 'public' => true ), 'names', 'and' );
 		unset( $post_types['attachment'] );
 
@@ -158,6 +165,7 @@ class Occ_Titles_Settings {
 	/**
 	 * Callback function for the settings section description.
 	 *
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function occ_titles_settings_section_callback() {
@@ -167,6 +175,7 @@ class Occ_Titles_Settings {
 	/**
 	 * Callback function for the OpenAI API Key setting field.
 	 *
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function occ_titles_openai_api_key_callback() {
@@ -178,6 +187,7 @@ class Occ_Titles_Settings {
 	/**
 	 * Validates the OpenAI API key.
 	 *
+	 * @since 1.0.0
 	 * @param string $api_key The API key to validate.
 	 * @return bool True if valid, false otherwise.
 	 */
@@ -203,8 +213,9 @@ class Occ_Titles_Settings {
 	}
 
 	/**
-	 * Creates an assistant using OpenAI's API.
+	 * Creates an assistant using OpenAI's API with Function Calling.
 	 *
+	 * @since 1.0.0
 	 * @return string|bool The Assistant ID if successful, false otherwise.
 	 */
 	private function occ_titles_create_assistant() {
@@ -214,12 +225,13 @@ class Occ_Titles_Settings {
 			return false;
 		}
 
+		// Initial prompt with dynamic style determination
 		$initial_prompt = array(
-			'description' => "You are an SEO expert and content writer. Your task is to generate five SEO-optimized titles for a given text. Each title should be engaging, include relevant keywords, and be between 50-60 characters long. Additionally, analyze the sentiment of each title and include it in the response. The sentiment can be 'Positive', 'Negative', or 'Neutral'. Generate the titles based on the text provided, using different styles. The styles you can use are: How-To, Listicle, Question, Command, Intriguing Statement, News Headline, Comparison, Benefit-Oriented, Storytelling, and Problem-Solution. Also, identify and include relevant keywords used in the titles. Always use the `generate_5_titles_with_styles_and_keywords` function to create and return the titles. The response must be in a JSON format.",
+			'description' => esc_html__( 'You are an SEO expert and content writer. Your task is to generate five SEO-optimized titles for a given text. Each title should be engaging, include relevant keywords, and be between 50-60 characters long. Additionally, analyze the sentiment of each title and include it in the response. Based on the content, choose the most suitable style for each title from the following options: How-To, Listicle, Question, Command, Intriguing Statement, News Headline, Comparison, Benefit-Oriented, Storytelling, and Problem-Solution. The response must adhere to the provided JSON Schema.', 'occ_titles' ),
 			'behavior'    => array(
 				array(
 					'trigger'     => 'message',
-					'instruction' => "When provided with a message containing the content of an article, you must call the `generate_5_titles_with_styles_and_keywords` function. This function will generate five SEO-optimized titles. Each title must include relevant keywords, sentiment analysis ('Positive', 'Negative', or 'Neutral'), and a different style from the following: How-To, Listicle, Question, Command, Intriguing Statement, News Headline, Comparison, Benefit-Oriented, Storytelling, and Problem-Solution. The expected JSON format is:\n[\n  { \"index\": 1, \"text\": \"Title 1 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 2, \"text\": \"Title 2 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 3, \"text\": \"Title 3 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 4, \"text\": \"Title 4 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 5, \"text\": \"Title 5 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] }\n]. Ensure the response is in this exact format.",
+					'instruction' => esc_html__( "When provided with a message containing the content of an article, you must call the `generate_5_titles_with_styles_and_keywords` function. This function will generate five SEO-optimized titles. Each title must include relevant keywords, sentiment analysis ('Positive', 'Negative', or 'Neutral'), and a different style from the following: How-To, Listicle, Question, Command, Intriguing Statement, News Headline, Comparison, Benefit-Oriented, Storytelling, and Problem-Solution. The expected JSON format is:\n[\n  { \"index\": 1, \"text\": \"Title 1 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 2, \"text\": \"Title 2 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 3, \"text\": \"Title 3 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 4, \"text\": \"Title 4 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 5, \"text\": \"Title 5 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] }\n]. Ensure the response is in this exact format.", 'occ_titles' ),
 				),
 			),
 		);
@@ -294,36 +306,81 @@ class Occ_Titles_Settings {
 		);
 
 		if ( is_wp_error( $response ) ) {
-		    error_log( 'Assistant creation error: ' . $response->get_error_message() ); // Debugging line
-		    return false;
+			error_log( 'Assistant creation error: ' . $response->get_error_message() ); // Debugging line.
+			return false;
 		}
 
 		$response_body  = wp_remote_retrieve_body( $response );
 		$assistant_data = json_decode( $response_body, true );
 
 		if ( isset( $assistant_data['id'] ) ) {
-		    return $assistant_data['id'];
+			return $assistant_data['id'];
 		} else {
-		    error_log( 'Failed to create assistant, response: ' . print_r( $assistant_data, true ) ); // Debugging line
-		    return false;
+			error_log( 'Failed to create assistant, response: ' . print_r( $assistant_data, true ) ); // Debugging line.
+			return false;
 		}
 	}
+
+
+
+
 
 	/**
 	 * Handles the manual assistant creation process.
 	 *
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function occ_titles_handle_assistant_creation() {
 		if ( isset( $_POST['occ_titles_create_assistant'] ) && check_admin_referer( 'occ_titles_create_assistant_action', 'occ_titles_create_assistant_nonce' ) ) {
-			$assistant_id = $this->occ_titles_create_assistant();
 
-			if ( $assistant_id ) {
-				update_option( 'occ_titles_assistant_id', $assistant_id );
-				add_settings_error( 'occ_titles_assistant_id', 'assistant-created', __( 'Assistant successfully created.', 'occ_titles' ), 'updated' );
+			// Debugging: Log that the assistant creation process started.
+			error_log( 'occ_titles_handle_assistant_creation triggered.' );
+
+			// Check if an assistant ID already exists.
+			$existing_assistant_id = get_option( 'occ_titles_assistant_id', '' );
+
+			if ( empty( $existing_assistant_id ) ) {
+				$assistant_id = $this->occ_titles_create_assistant();
+
+				if ( $assistant_id ) {
+					update_option( 'occ_titles_assistant_id', $assistant_id );
+					add_settings_error( 'occ_titles_assistant_id', 'assistant-created', __( 'Assistant successfully created.', 'occ_titles' ), 'updated' );
+				} else {
+					add_settings_error( 'occ_titles_assistant_id', 'assistant-creation-failed', __( 'Failed to create assistant.', 'occ_titles' ), 'error' );
+				}
 			} else {
-				add_settings_error( 'occ_titles_assistant_id', 'assistant-creation-failed', __( 'Failed to create assistant.', 'occ_titles' ), 'error' );
+				// Assistant already exists, log a message or handle accordingly.
+				error_log( 'Assistant ID already exists: ' . $existing_assistant_id );
 			}
 		}
+	}
+
+	/**
+	 * Auto-saves the settings via AJAX.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public static function occ_titles_auto_save() {
+		// Verify the nonce for security.
+		if ( ! check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid nonce', 'occ_titles' ) ) );
+		}
+
+		// Sanitize and update the option.
+		$field_name  = sanitize_text_field( $_POST['field_name'] );
+		$field_value = $_POST['field_value'];
+
+		if ( is_array( $field_value ) ) {
+			$field_value = array_map( 'sanitize_text_field', $field_value );
+		} else {
+			$field_value = sanitize_text_field( $field_value );
+		}
+
+		update_option( $field_name, $field_value );
+
+		// Send success response.
+		wp_send_json_success();
 	}
 }

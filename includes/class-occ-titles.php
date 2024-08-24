@@ -1,6 +1,6 @@
 <?php
 /**
- * The file that defines the core plugin class
+ * The file that defines the core plugin class.
  *
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
@@ -16,10 +16,8 @@
  * The core plugin class.
  *
  * This is used to define internationalization, admin-specific hooks, and
- * public-facing site hooks.
- *
- * Also maintains the unique identifier of this plugin as well as the current
- * version of the plugin.
+ * public-facing site hooks. Also maintains the unique identifier of this plugin
+ * as well as the current version of the plugin.
  *
  * @since      1.0.0
  * @package    Occ_Titles
@@ -62,7 +60,7 @@ class Occ_Titles {
 	 * Load the dependencies, define the locale, and set the hooks for the admin area and
 	 * the public-facing side of the site.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		if ( defined( 'OCC_TITLES_VERSION' ) ) {
@@ -75,7 +73,7 @@ class Occ_Titles {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-		$this->define_public_hooks();
+		// $this->define_public_hooks();
 	}
 
 	/**
@@ -83,16 +81,16 @@ class Occ_Titles {
 	 *
 	 * Include the following files that make up the plugin:
 	 *
-	 * - Occ_Titles_Loader. Orchestrates the hooks of the plugin.
-	 * - Occ_Titles_I18n. Defines internationalization functionality.
-	 * - Occ_Titles_Admin. Defines all hooks for the admin area.
-	 * - Occ_Titles_Public. Defines all hooks for the public side of the site.
+	 * - Occ_Titles_Loader: Orchestrates the hooks of the plugin.
+	 * - Occ_Titles_I18n: Defines internationalization functionality.
+	 * - Occ_Titles_Admin: Defines all hooks for the admin area.
+	 * - Occ_Titles_Public: Defines all hooks for the public side of the site.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
 	 *
-	 * @since    1.0.0
-	 * @access   private
+	 * @since 1.0.0
+	 * @access private
 	 */
 	private function load_dependencies() {
 
@@ -111,20 +109,17 @@ class Occ_Titles {
 		// The class responsible for defining settings actions that occur in the admin area.
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-occ-titles-settings.php';
 
-		// The class responsible for defining all actions that occur in the public-facing side of the site.
-		require_once plugin_dir_path( __DIR__ ) . 'public/class-occ-titles-public.php';
-
 		$this->loader = new Occ_Titles_Loader();
 	}
 
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * Uses the Occ_Titles_I18n class in order to set the domain and to register the hook
+	 * Uses the Occ_Titles_I18n class to set the domain and to register the hook
 	 * with WordPress.
 	 *
-	 * @since    1.0.0
-	 * @access   private
+	 * @since 1.0.0
+	 * @access private
 	 */
 	private function set_locale() {
 
@@ -136,8 +131,8 @@ class Occ_Titles {
 	/**
 	 * Register all of the hooks related to the admin area functionality of the plugin.
 	 *
-	 * @since    1.0.0
-	 * @access   private
+	 * @since 1.0.0
+	 * @access private
 	 */
 	private function define_admin_hooks() {
 		$plugin_admin    = new Occ_Titles_Admin( $this->get_plugin_name(), $this->get_version() );
@@ -152,13 +147,14 @@ class Occ_Titles {
 		$this->loader->add_action( 'wp_ajax_occ_titles_generate_titles', $plugin_admin, 'generate_titles' );
 
 		$this->loader->add_action( 'admin_init', $plugin_settings, 'occ_titles_handle_assistant_creation' );
+		$this->loader->add_action( 'wp_ajax_occ_titles_auto_save', $plugin_settings, 'occ_titles_auto_save' );
 	}
 
 	/**
 	 * Register all of the hooks related to the public-facing functionality of the plugin.
 	 *
-	 * @since    1.0.0
-	 * @access   private
+	 * @since 1.0.0
+	 * @access private
 	 */
 	private function define_public_hooks() {
 
@@ -171,7 +167,7 @@ class Occ_Titles {
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function run() {
 		$this->loader->run();
@@ -181,8 +177,8 @@ class Occ_Titles {
 	 * The name of the plugin used to uniquely identify it within the context of
 	 * WordPress and to define internationalization functionality.
 	 *
-	 * @since     1.0.0
-	 * @return    string    The name of the plugin.
+	 * @since 1.0.0
+	 * @return string The name of the plugin.
 	 */
 	public function get_plugin_name() {
 		return $this->plugin_name;
@@ -191,8 +187,8 @@ class Occ_Titles {
 	/**
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
-	 * @since     1.0.0
-	 * @return    Occ_Titles_Loader    Orchestrates the hooks of the plugin.
+	 * @since 1.0.0
+	 * @return Occ_Titles_Loader Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;
@@ -201,8 +197,8 @@ class Occ_Titles {
 	/**
 	 * Retrieve the version number of the plugin.
 	 *
-	 * @since     1.0.0
-	 * @return    string    The version number of the plugin.
+	 * @since 1.0.0
+	 * @return string The version number of the plugin.
 	 */
 	public function get_version() {
 		return $this->version;

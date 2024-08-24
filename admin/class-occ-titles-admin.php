@@ -2,6 +2,9 @@
 /**
  * The admin-specific functionality of the plugin.
  *
+ * Handles the admin-specific hooks for enqueuing stylesheets and JavaScript, and provides
+ * the functionality for generating SEO-optimized titles using OpenAI.
+ *
  * @link       https://oneclickcontent.com
  * @since      1.0.0
  *
@@ -12,8 +15,7 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * Defines the plugin name, version, and handles the admin-specific hooks for
- * enqueuing stylesheets and JavaScript.
+ * Defines the plugin name, version, and handles the admin-specific hooks.
  *
  * @package    Occ_Titles
  * @subpackage Occ_Titles/admin
@@ -23,36 +25,36 @@ class Occ_Titles_Admin {
 	/**
 	 * The ID of this plugin.
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string $plugin_name The ID of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 * @var string $plugin_name The ID of this plugin.
 	 */
 	private $plugin_name;
 
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string $version The current version of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 * @var string $version The current version of this plugin.
 	 */
 	private $version;
 
 	/**
 	 * Helper class instance for handling OpenAI API requests.
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      Occ_Titles_OpenAI_Helper $openai_helper Instance of the helper class.
+	 * @since 1.0.0
+	 * @access private
+	 * @var Occ_Titles_OpenAI_Helper $openai_helper Instance of the helper class.
 	 */
 	private $openai_helper;
 
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    1.0.0
-	 * @param    string $plugin_name The name of this plugin.
-	 * @param    string $version     The version of this plugin.
+	 * @since 1.0.0
+	 * @param string $plugin_name The name of this plugin.
+	 * @param string $version     The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name   = $plugin_name;
@@ -75,16 +77,24 @@ class Occ_Titles_Admin {
 		if ( ( 'post-new.php' === $pagenow || 'post.php' === $pagenow ) && isset( $_GET['post'] ) ) {
 			$post_type = get_post_type( intval( $_GET['post'] ) );
 			if ( in_array( $post_type, $selected_post_types, true ) ) {
-				wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/occ-titles-admin.css', array(), $this->version, 'all' );
+				wp_enqueue_style(
+					$this->plugin_name,
+					plugin_dir_url( __FILE__ ) . 'css/occ-titles-admin.css',
+					array(),
+					$this->version,
+					'all'
+				);
 			}
 		} elseif ( 'options-general.php' === $pagenow && isset( $_GET['page'] ) && 'occ_titles-settings' === $_GET['page'] ) {
-			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/occ-titles-admin.css', array(), $this->version, 'all' );
+			wp_enqueue_style(
+				$this->plugin_name,
+				plugin_dir_url( __FILE__ ) . 'css/occ-titles-admin.css',
+				array(),
+				$this->version,
+				'all'
+			);
 		}
 	}
-
-
-
-
 
 	/**
 	 * Register the JavaScript for the admin area.
@@ -101,10 +111,22 @@ class Occ_Titles_Admin {
 		if ( ( 'post-new.php' === $pagenow || 'post.php' === $pagenow ) && isset( $_GET['post'] ) ) {
 			$post_type = get_post_type( intval( $_GET['post'] ) );
 			if ( in_array( $post_type, $selected_post_types, true ) ) {
-				wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/occ-titles-admin.js', array( 'jquery' ), $this->version, true );
+				wp_enqueue_script(
+					$this->plugin_name,
+					plugin_dir_url( __FILE__ ) . 'js/occ-titles-admin.js',
+					array( 'jquery' ),
+					$this->version,
+					true
+				);
 			}
 		} elseif ( 'options-general.php' === $pagenow && isset( $_GET['page'] ) && 'occ_titles-settings' === $_GET['page'] ) {
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/occ-titles-admin.js', array( 'jquery' ), $this->version, true );
+			wp_enqueue_script(
+				$this->plugin_name,
+				plugin_dir_url( __FILE__ ) . 'js/occ-titles-admin.js',
+				array( 'jquery' ),
+				$this->version,
+				true
+			);
 		}
 
 		wp_localize_script(
@@ -119,12 +141,8 @@ class Occ_Titles_Admin {
 		);
 	}
 
-
-
-
-
 	/**
-	 * Add the "Generate Titles" button to the post editor.
+	 * Add the "Generate Titles" button and style dropdown to the post editor.
 	 *
 	 * @since 1.0.0
 	 * @return void
@@ -137,12 +155,39 @@ class Occ_Titles_Admin {
 		// Check if the current page is the post editor and if the post type is selected.
 		if ( ( 'post-new.php' === $pagenow || 'post.php' === $pagenow ) && isset( $post ) ) {
 			if ( in_array( $post->post_type, $selected_post_types, true ) ) {
-				echo '<div id="occ_titles--button-wrapper">
-					<button id="occ_titles_button" class="button button-primary">' . esc_html__( 'Generate Titles', 'occ_titles' ) . '</button>
-				</div>';
+				echo '<div id="occ_titles--controls-wrapper" style="margin-bottom: 20px;">';
+
+				// Hidden dropdown for Style selection initially
+				echo '<label for="occ_titles_style" style="margin-right: 10px; display: none;" class="occ_titles_style_label">' . esc_html__( 'Select Style:', 'occ_titles' ) . '</label>';
+				echo '<select id="occ_titles_style" name="occ_titles_style" style="display: none;" class="occ_titles_style_dropdown">';
+				echo '<option value="" disabled selected>' . esc_html__( 'Choose a Style...', 'occ_titles' ) . '</option>'; // Placeholder option
+				$styles = array(
+					'How-To',
+					'Listicle',
+					'Question',
+					'Command',
+					'Intriguing Statement',
+					'News Headline',
+					'Comparison',
+					'Benefit-Oriented',
+					'Storytelling',
+					'Problem-Solution',
+				);
+				foreach ( $styles as $style ) {
+					echo '<option value="' . esc_attr( strtolower( $style ) ) . '">' . esc_html( $style ) . '</option>';
+				}
+				echo '</select>';
+
+				// Generate Titles Button.
+				echo '<button id="occ_titles_button" class="button button-primary">' . esc_html__( 'Generate Titles', 'occ_titles' ) . '</button>';
+				echo '</div>';
 			}
 		}
 	}
+
+
+
+
 
 	/**
 	 * Handle the AJAX request to generate titles using OpenAI.
@@ -154,12 +199,12 @@ class Occ_Titles_Admin {
 
 		// Check nonce for security.
 		if ( ! check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => 'Nonce verification failed.' ) );
+			wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'occ_titles' ) ) );
 		}
 
 		// Verify the user has the appropriate capability.
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => 'Permission denied.' ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'occ_titles' ) ) );
 		}
 
 		// Sanitize and get incoming data.
@@ -170,17 +215,17 @@ class Occ_Titles_Admin {
 
 		// Check for missing data.
 		if ( empty( $content ) || empty( $api_key ) || empty( $assistant_id ) ) {
-			wp_send_json_error( array( 'message' => 'Missing data.' ) );
+			wp_send_json_error( array( 'message' => __( 'Missing data.', 'occ_titles' ) ) );
 		}
 
 		// Step 1: Create a new thread.
 		$thread_id = $this->openai_helper->create_thread( $api_key );
 		if ( ! $thread_id ) {
-			wp_send_json_error( array( 'message' => 'Failed to create thread.' ) );
+			wp_send_json_error( array( 'message' => __( 'Failed to create thread.', 'occ_titles' ) ) );
 		}
 
 		// Modify the query with the selected style.
-		$query = $content . "\n\nStyle: " . ucfirst( $style );
+		$query = $content . "\n\n" . __( 'Style:', 'occ_titles' ) . ' ' . ucfirst( $style );
 
 		// Step 2: Add message and run thread.
 		$result = $this->openai_helper->add_message_and_run_thread( $api_key, $thread_id, $assistant_id, $query );
@@ -189,7 +234,7 @@ class Occ_Titles_Admin {
 		} elseif ( isset( $result['titles'] ) ) {
 			wp_send_json_success( $result );
 		} else {
-			wp_send_json_error( array( 'message' => 'Unexpected response format.' ) );
+			wp_send_json_error( array( 'message' => __( 'Unexpected response format.', 'occ_titles' ) ) );
 		}
 	}
 }

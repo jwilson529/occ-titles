@@ -1,22 +1,24 @@
 <?php
 /**
- * The admin-specific functionality of the plugin.
+ * The admin-specific functionality of the plugin concerning settings.
+ *
+ * Defines the plugin name, version, and methods for interacting with the OpenAI API.
  *
  * @link       https://oneclickcontent.com
  * @since      1.0.0
  *
  * @package    Occ_Titles
  * @subpackage Occ_Titles/admin
+ * @author     James Wilson <info@oneclickcontent.com>
  */
 
 /**
- * The admin-specific functionality of the plugin concerning settings.
+ * Class Occ_Titles_OpenAI_Helper
  *
- * Defines the plugin name, version, and methods for interacting with the OpenAI API.
+ * Provides methods for interacting with the OpenAI API.
  *
  * @package    Occ_Titles
  * @subpackage Occ_Titles/admin
- * @author     James Wilson <info@oneclickcontent.com>
  */
 class Occ_Titles_OpenAI_Helper {
 

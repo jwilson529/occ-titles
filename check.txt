@@ -1,0 +1,48 @@
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/includes/class-occ-titles.php
+----------------------------------------------------------------------------------------------------------------------------
+FOUND 0 ERRORS AND 1 WARNING AFFECTING 1 LINE
+----------------------------------------------------------------------------------------------------------------------------
+ 76 | WARNING | This comment is 84% valid code; is this commented out code?
+----------------------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/admin/class-occ-titles-settings.php
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+FOUND 7 ERRORS AND 5 WARNINGS AFFECTING 8 LINES
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+ 146 | ERROR   | Inline comments must end in full-stops, exclamation marks, or question marks
+ 228 | ERROR   | Inline comments must end in full-stops, exclamation marks, or question marks
+ 309 | WARNING | error_log() found. Debug code should not normally be used in production.
+ 319 | WARNING | error_log() found. Debug code should not normally be used in production.
+ 319 | WARNING | print_r() found. Debug code should not normally be used in production.
+ 338 | WARNING | error_log() found. Debug code should not normally be used in production.
+ 354 | WARNING | error_log() found. Debug code should not normally be used in production.
+ 372 | ERROR   | Detected usage of a possibly undefined superglobal array index: $_POST['field_name']. Use isset() or empty() to check the index exists
+     |         | before using it
+ 372 | ERROR   | $_POST['field_name'] not unslashed before sanitization. Use wp_unslash() or similar
+ 373 | ERROR   | Detected usage of a possibly undefined superglobal array index: $_POST['field_value']. Use isset() or empty() to check the index exists
+     |         | before using it
+ 373 | ERROR   | $_POST['field_value'] not unslashed before sanitization. Use wp_unslash() or similar
+ 373 | ERROR   | Detected usage of a non-sanitized input variable: $_POST['field_value']
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+FILE: /Users/jameswilson/Local Sites/wp-clean-install/app/public/wp-content/plugins/occ-titles/admin/class-occ-titles-admin.php
+-------------------------------------------------------------------------------------------------------------------------------
+FOUND 2 ERRORS AND 8 WARNINGS AFFECTING 8 LINES
+-------------------------------------------------------------------------------------------------------------------------------
+  77 | WARNING | Processing form data without nonce verification.
+  78 | WARNING | Processing form data without nonce verification.
+  88 | WARNING | Processing form data without nonce verification.
+  88 | WARNING | Processing form data without nonce verification.
+ 111 | WARNING | Processing form data without nonce verification.
+ 112 | WARNING | Processing form data without nonce verification.
+ 122 | WARNING | Processing form data without nonce verification.
+ 122 | WARNING | Processing form data without nonce verification.
+ 160 | ERROR   | Inline comments must end in full-stops, exclamation marks, or question marks
+ 163 | ERROR   | Inline comments must end in full-stops, exclamation marks, or question marks
+-------------------------------------------------------------------------------------------------------------------------------
+
+Time: 445ms; Memory: 16MB
+
