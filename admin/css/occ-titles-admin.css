@@ -1,25 +1,24 @@
-/* Table Styles */
+/* OCC Titles Plugin Styles */
+
+/* ===== Table Styles ===== */
 #occ_titles_table {
     margin-top: 20px;
     width: 100%;
     border-collapse: collapse;
     border: 1px solid #ddd;
-    text-align: center; /* Center all table data */
+    text-align: center;
 }
 
 #occ_titles_table th,
 #occ_titles_table td {
     padding: 12px;
-    text-align: center; /* Center text in table headers and cells */
+    text-align: center;
     border-bottom: 1px solid #ddd;
+    vertical-align: middle;
 }
 
 #occ_titles_table tr:hover {
     background-color: #f5f5f5;
-}
-
-#occ_titles_table td {
-    vertical-align: middle; /* Vertically center table data */
 }
 
 #occ_titles_table td.emoji {
@@ -40,7 +39,7 @@
     text-decoration: underline;
 }
 
-/* Button Styles */
+/* ===== Button Styles ===== */
 #occ_titles_revert_button,
 #occ_titles_button,
 #occ_titles_create_assistant {
@@ -74,7 +73,7 @@
     box-shadow: 0 0 0 2px #005177;
 }
 
-/* Spinner Styles */
+/* ===== Spinner Styles ===== */
 .occ-spinner-wrapper {
     display: none;
     position: fixed;
@@ -99,30 +98,17 @@
     animation: spin 0.8s linear infinite;
 }
 
-#occ_titles_meta_box .handle-actions.hide-if-no-js {
-    display: none;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
 .occ-spinner-text {
     position: absolute;
     top: calc(50% + 80px);
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
-    font-size: 2em; /* Increase font size */
+    font-size: 2em;
     text-align: center;
 }
 
-/* General Styles for the Settings Page */
+/* ===== Settings Form Styles ===== */
 .occ_titles-settings-form .form-table {
     width: 100%;
     max-width: 800px;
@@ -164,12 +150,10 @@
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Checkbox Styles */
 .occ_titles-settings-form .form-table input[type="checkbox"] {
     margin-right: 5px;
 }
 
-/* Submit Button Styles */
 .occ_titles-settings-form .submit input[type="submit"] {
     background: #0073aa;
     color: #fff;
@@ -183,14 +167,13 @@
     background: #005177;
 }
 
-/* Container for toggle switch and label */
+/* ===== Toggle Switch Styles ===== */
 .toggle-switch-container {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
 }
 
-/* Toggle Switch Styles */
 .toggle-switch {
     position: relative;
     display: inline-block;
@@ -240,7 +223,7 @@ input:checked + .slider:before {
     color: #333;
 }
 
-/* Notification Styles */
+/* ===== Notification Styles ===== */
 .occ_titles-notification {
     position: fixed;
     top: 40px;
@@ -263,74 +246,19 @@ input:checked + .slider:before {
     background-color: #dc3545; /* Error - Red */
 }
 
-/* Animation for Notification */
-.occ_titles-notification.fade-in {
-    animation: fadeIn 0.5s forwards;
-}
-
-.occ_titles-notification.fade-out {
-    animation: fadeOut 0.5s forwards;
-}
-
-/* Adjusted Dropdown and Button Styles */
-#occ_titles--controls-wrapper {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.occ_titles_style_label {
-    margin-right: 10px;
-    font-weight: bold;
-}
-
-.occ_titles_style_dropdown {
-    padding: 8px; /* Padding to match the button */
-    height: 38px; /* Ensure height matches the button */
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    background-color: #fff;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-    margin-right: 10px; /* Space between dropdown and button */
-}
-
-#occ_titles_button {
-    height: 38px; /* Ensure height matches the dropdown */
-    padding: 8px 20px;
-    background: #0073aa;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    border-radius: 4px;
-}
-
-#occ_titles_button:hover {
-    background-color: #005177;
-}
-
-#occ_titles_button:active {
-    background-color: #00395a;
-}
-
-#occ_titles_button:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #005177;
-}
-
+/* ===== Controls Wrapper Styles ===== */
 #occ_titles--controls-wrapper {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-bottom: 20px;
 }
 
 #occ_titles--controls-wrapper label,
 #occ_titles--controls-wrapper select,
 #occ_titles--controls-wrapper button {
-    width: 100%; /* Ensure elements take full width */
-    box-sizing: border-box; /* Include padding and border in the element's width and height */
+/*    width: 100%;*/
+    box-sizing: border-box;
 }
 
 #occ_titles--controls-wrapper select {
@@ -339,9 +267,30 @@ input:checked + .slider:before {
 
 #occ_titles--controls-wrapper button {
     margin-top: 10px;
-    align-self: flex-start; /* Align the button to the left */
+    align-self: flex-start;
 }
 
+.occ_titles_style_label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.occ_titles_style_dropdown {
+    padding: 8px;
+    height: 38px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    margin-right: 10px;
+}
+
+/* ===== Animations ===== */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
 @keyframes fadeIn {
     from {
@@ -365,3 +314,15 @@ input:checked + .slider:before {
     }
 }
 
+/* ===== Miscellaneous ===== */
+#occ_titles_meta_box .handle-actions.hide-if-no-js {
+    /* Uncomment to hide: display: none; */
+}
+
+.occ_titles-notification.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+
+.occ_titles-notification.fade-out {
+    animation: fadeOut 0.5s forwards;
+}

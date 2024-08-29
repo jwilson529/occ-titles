@@ -2,19 +2,32 @@
     'use strict';
 
     $(document).ready(function() {
-        console.log('before');
-        // Initialize auto-save for all settings fields using the function from the external file.
-        window.initializeAutoSave();
-        console.log('after');
+        // Add the button inside the title input
+        var $titleInput = $('#title');
+        if ($titleInput.length) {
+            $titleInput.css('position', 'relative');
+            $titleInput.after('<button id="occ_titles_generate_button" class="button" type="button" title="Generate Titles"><span class="dashicons dashicons-lightbulb"></span></button>');
+
+            // Position the button within the input field
+            $('#occ_titles_generate_button').css({
+                position: 'absolute',
+                right: '6px',
+                top: '6px',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer'
+            });
+        }
+
         /**
          * Move the "Generate Titles" meta box directly under the post title.
          */
-        var $metaBox = $('#occ_titles_meta_box');
-        var $titleDiv = $('#titlediv');
+        // var $metaBox = $('#occ_titles_meta_box');
+        // var $titleDiv = $('#titlediv');
 
-        if ($metaBox.length && $titleDiv.length) {
-            $metaBox.insertAfter($titleDiv);
-        }
+        // if ($metaBox.length && $titleDiv.length) {
+        //     $metaBox.insertAfter($titleDiv);
+        // }
 
 
 
@@ -67,7 +80,7 @@
         `);
 
         // Event handler for the "Generate Titles" button
-        $('#occ_titles_button').click(function(e) {
+        $('#occ_titles_generate_button, #occ_titles_button').click(function(e) {
             e.preventDefault();
 
             hasGenerated = true; // Mark titles as generated

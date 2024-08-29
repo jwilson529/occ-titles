@@ -192,7 +192,7 @@ class Occ_Titles_Admin {
 	            esc_html__( 'Generate SEO Titles', 'occ_titles' ),
 	            array( $this, 'render_meta_box' ),
 	            $post_type,
-	            'normal',
+	            'side',
 	            'high'
 	        );
 	    }
