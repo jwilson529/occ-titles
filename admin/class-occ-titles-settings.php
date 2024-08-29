@@ -123,18 +123,71 @@ class Occ_Titles_Settings {
 	 * @return void
 	 */
 	public function occ_titles_assistant_id_callback() {
-		$value = get_option( 'occ_titles_assistant_id', '' );
+	    $assistant_id = get_option('occ_titles_assistant_id', '');
 
-		if ( empty( $value ) ) {
-			$value = $this->occ_titles_create_assistant();
-			if ( $value ) {
-				update_option( 'occ_titles_assistant_id', $value );
-			}
-		}
+	    // Validate existing Assistant ID
+	    if (!empty($assistant_id) && !$this->validate_assistant_id($assistant_id)) {
+	        // Invalid Assistant ID, try to create a new one
+	        $assistant_id = $this->occ_titles_create_assistant();
+	        if ($assistant_id) {
+	            update_option('occ_titles_assistant_id', $assistant_id);
+	            add_settings_error(
+	                'occ_titles_assistant_id',
+	                'assistant-created',
+	                __('A new assistant was created because the existing one was invalid.', 'occ_titles'),
+	                'updated'
+	            );
+	        } else {
+	            add_settings_error(
+	                'occ_titles_assistant_id',
+	                'assistant-creation-failed',
+	                __('Failed to create a new assistant.', 'occ_titles'),
+	                'error'
+	            );
+	        }
+	    }
 
-		echo '<input type="text" id="occ_titles_assistant_id" name="occ_titles_assistant_id" value="' . esc_attr( $value ) . '" />';
-		echo '<p class="description">' . esc_html__( 'Enter the Assistant ID provided by OpenAI or leave as is to use the auto-generated one.', 'occ_titles' ) . '</p>';
+	    echo '<input type="text" id="occ_titles_assistant_id" name="occ_titles_assistant_id" value="' . esc_attr($assistant_id) . '" />';
+	    echo '<p class="description">' . esc_html__('Enter the Assistant ID provided by OpenAI or leave as is to use the auto-generated one.', 'occ_titles') . '</p>';
 	}
+
+
+	/**
+	 * Validates the Assistant ID by checking its existence in OpenAI.
+	 *
+	 * @since 1.0.0
+	 * @param string $assistant_id The Assistant ID to validate.
+	 * @return bool True if the Assistant ID is valid, false otherwise.
+	 */
+	private function validate_assistant_id($assistant_id) {
+	    $api_key = get_option('occ_titles_openai_api_key');
+
+	    if (empty($api_key) || empty($assistant_id)) {
+	        return false;
+	    }
+
+	    $response = wp_remote_get(
+	        'https://api.openai.com/v1/assistants/' . $assistant_id,
+	        array(
+	            'headers' => array(
+	                'Content-Type'  => 'application/json',
+	                'Authorization' => 'Bearer ' . $api_key,
+	                'OpenAI-Beta'   => 'assistants=v2',
+	            ),
+	        )
+	    );
+
+	    if (is_wp_error($response)) {
+	        return false;
+	    }
+
+	    $body = wp_remote_retrieve_body($response);
+	    $data = json_decode($body, true);
+
+	    // If the assistant exists, it should return data; otherwise, return false
+	    return isset($data['id']) && $data['id'] === $assistant_id;
+	}
+
 
 	/**
 	 * Callback function for the Post Types setting field.

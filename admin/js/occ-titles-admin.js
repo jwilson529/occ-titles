@@ -36,8 +36,8 @@
             var styleText = $('#occ_titles_style option:selected').text();
 
             // Set button text based on whether titles have been generated
-            var buttonText = hasGenerated && selectedStyle ?
-                'Generate 5 More ' + styleText + ' Titles' :
+            var buttonText = hasGenerated && selectedStyle ? 
+                'Generate 5 More ' + styleText + ' Titles' : 
                 'Generate Titles';
 
             $('#occ_titles_button').html(buttonText);
@@ -72,22 +72,22 @@
             }
 
             $.ajax({
-                    url: occ_titles_admin_vars.ajax_url,
-                    type: 'POST',
-                    dataType: 'json',
-                    data: {
-                        action: 'occ_titles_auto_save',
-                        nonce: occ_titles_admin_vars.occ_titles_ajax_nonce,
-                        field_name: fieldName.replace('[]', ''),
-                        field_value: fieldValue
-                    }
-                })
-                .done(function(response) {
-                    showNotification(response.success ? 'Settings saved successfully.' : 'Failed to save settings.', response.success ? 'success' : 'error');
-                })
-                .fail(function() {
-                    showNotification('Error saving settings.', 'error');
-                });
+                url: occ_titles_admin_vars.ajax_url,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'occ_titles_auto_save',
+                    nonce: occ_titles_admin_vars.occ_titles_ajax_nonce,
+                    field_name: fieldName.replace('[]', ''),
+                    field_value: fieldValue
+                }
+            })
+            .done(function(response) {
+                showNotification(response.success ? 'Settings saved successfully.' : 'Failed to save settings.', response.success ? 'success' : 'error');
+            })
+            .fail(function() {
+                showNotification('Error saving settings.', 'error');
+            });
         }
 
         /**
@@ -158,11 +158,11 @@
                 $('.occ_titles_style_label, .occ_titles_style_dropdown').show();
             }
 
-            originalTitle = $('#editor').length ?
-                wp.data.select('core/editor').getEditedPostAttribute('title') :
+            originalTitle = $('#editor').length ? 
+                wp.data.select('core/editor').getEditedPostAttribute('title') : 
                 $('input#title').val();
-            var content = $('#editor').length ?
-                wp.data.select('core/editor').getEditedPostContent() :
+            var content = $('#editor').length ? 
+                wp.data.select('core/editor').getEditedPostContent() : 
                 $('textarea#content').val();
             var style = $('#occ_titles_style').val() || ''; // Get the selected style
             var nonce = occ_titles_admin_vars.occ_titles_ajax_nonce;
@@ -174,7 +174,7 @@
 
         // Event handler for the "Revert Title" button
         $('#occ_titles_revert_button').click(function(e) {
-            e.preventDefault();
+            e.preventDefault(); 
             setTitleInEditor(originalTitle);
         });
 
@@ -271,8 +271,8 @@
          */
         function displayKeywords(keywords) {
             var keywordsDisplay = $('#occ_keywords_display');
-            keywordsDisplay.html(keywords.length ?
-                'Keywords used in density calculation: ' + keywords.join(', ') :
+            keywordsDisplay.html(keywords.length ? 
+                'Keywords used in density calculation: ' + keywords.join(', ') : 
                 'No keywords generated.');
         }
 

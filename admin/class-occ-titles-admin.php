@@ -216,49 +216,61 @@ class Occ_Titles_Admin {
 	 * @return void
 	 */
 	public function generate_titles() {
-		// Check nonce for security.
-		if ( ! check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'occ_titles' ) ) );
-		}
+	    // Check nonce for security.
+	    if ( ! check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce', false ) ) {
+	        wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'occ_titles' ) ) );
+	    }
 
-		// Verify the user has the appropriate capability.
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'occ_titles' ) ) );
-		}
+	    // Verify the user has the appropriate capability.
+	    if ( ! current_user_can( 'edit_posts' ) ) {
+	        wp_send_json_error( array( 'message' => __( 'Permission denied.', 'occ_titles' ) ) );
+	    }
 
-		// Sanitize and get incoming data.
-		$content      = isset( $_POST['content'] ) ? sanitize_text_field( wp_unslash( $_POST['content'] ) ) : '';
-		$style        = isset( $_POST['style'] ) ? sanitize_text_field( wp_unslash( $_POST['style'] ) ) : '';
-		$api_key      = get_option( 'occ_titles_openai_api_key' );
-		$assistant_id = get_option( 'occ_titles_assistant_id' );
+	    // Sanitize and get incoming data.
+	    $content      = isset( $_POST['content'] ) ? sanitize_text_field( wp_unslash( $_POST['content'] ) ) : '';
+	    $style        = isset( $_POST['style'] ) ? sanitize_text_field( wp_unslash( $_POST['style'] ) ) : '';
+	    $api_key      = get_option( 'occ_titles_openai_api_key' );
+	    $assistant_id = get_option( 'occ_titles_assistant_id' );
 
-		// Check for missing data.
-		if ( empty( $content ) || empty( $api_key ) || empty( $assistant_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Missing data.', 'occ_titles' ) ) );
-		}
+	    // Check for missing data.
+	    if ( empty( $content ) || empty( $api_key ) ) {
+	        wp_send_json_error( array( 'message' => __( 'Missing content or API key.', 'occ_titles' ) ) );
+	    }
 
-		// Modify the query with the selected style, if provided.
-		$query = $content;
-		if ( ! empty( $style ) ) {
-			$query .= "\n\nStyle: " . ucfirst( $style ); // Append the user-provided style to the query.
-		} else {
-			$query .= "\n\nStyle: Choose the most suitable style"; // Instruct the Assistant to choose the style.
-		}
+	    // If the assistant ID is missing, directly create a new assistant.
+	    if ( empty( $assistant_id ) ) {
+	        $assistant_id = $this->occ_titles_create_assistant();
 
-		// Step 1: Create a new thread.
-		$thread_id = $this->openai_helper->create_thread( $api_key );
-		if ( ! $thread_id ) {
-			wp_send_json_error( array( 'message' => __( 'Failed to create thread.', 'occ_titles' ) ) );
-		}
+	        if ( ! $assistant_id ) {
+	            wp_send_json_error( array( 'message' => __( 'Failed to create a new assistant.', 'occ_titles' ) ) );
+	        }
 
-		// Step 2: Add message and run thread.
-		$result = $this->openai_helper->add_message_and_run_thread( $api_key, $thread_id, $assistant_id, $query );
+	        // Save the new assistant ID.
+	        update_option( 'occ_titles_assistant_id', $assistant_id );
+	    }
 
-		// Check if the result contains the expected data structure.
-		if ( isset( $result['titles'] ) && is_array( $result['titles'] ) ) {
-			wp_send_json_success( array( 'titles' => $result['titles'] ) );
-		} else {
-			wp_send_json_error( array( 'message' => __( 'Unexpected response format.', 'occ_titles' ) ) );
-		}
+	    // Modify the query with the selected style, if provided.
+	    $query = $content;
+	    if ( ! empty( $style ) ) {
+	        $query .= "\n\nStyle: " . ucfirst( $style ); // Append the user-provided style to the query.
+	    } else {
+	        $query .= "\n\nStyle: Choose the most suitable style"; // Instruct the Assistant to choose the style.
+	    }
+
+	    // Step 1: Create a new thread.
+	    $thread_id = $this->openai_helper->create_thread( $api_key );
+	    if ( ! $thread_id ) {
+	        wp_send_json_error( array( 'message' => __( 'Failed to create thread.', 'occ_titles' ) ) );
+	    }
+
+	    // Step 2: Add message and run thread.
+	    $result = $this->openai_helper->add_message_and_run_thread( $api_key, $thread_id, $assistant_id, $query );
+
+	    // Check if the result contains the expected data structure.
+	    if ( isset( $result['titles'] ) && is_array( $result['titles'] ) ) {
+	        wp_send_json_success( array( 'titles' => $result['titles'] ) );
+	    } else {
+	        wp_send_json_error( array( 'message' => __( 'Unexpected response format.', 'occ_titles' ) ) );
+	    }
 	}
 }
