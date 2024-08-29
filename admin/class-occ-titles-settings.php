@@ -271,7 +271,7 @@ class Occ_Titles_Settings {
 	 * @since 1.0.0
 	 * @return string|bool The Assistant ID if successful, false otherwise.
 	 */
-	private function occ_titles_create_assistant() {
+	public function occ_titles_create_assistant() {
 	    $api_key = get_option('occ_titles_openai_api_key');
 
 	    if (empty($api_key)) {

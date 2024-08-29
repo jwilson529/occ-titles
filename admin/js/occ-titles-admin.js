@@ -2,7 +2,10 @@
     'use strict';
 
     $(document).ready(function() {
-
+        console.log('before');
+        // Initialize auto-save for all settings fields using the function from the external file.
+        window.initializeAutoSave();
+        console.log('after');
         /**
          * Move the "Generate Titles" meta box directly under the post title.
          */
@@ -13,10 +16,7 @@
             $metaBox.insertAfter($titleDiv);
         }
 
-        /**
-         * Initialize auto-save for all settings fields.
-         */
-        initializeAutoSave();
+
 
         var hasGenerated = false; // Flag to track if titles have been generated
 
@@ -43,87 +43,7 @@
             $('#occ_titles_button').html(buttonText);
         }
 
-        /**
-         * Initialize auto-save functionality for settings fields.
-         */
-        function initializeAutoSave() {
-            $('.occ_titles-settings-form').find('input, select, textarea').on('input change', debounce(function() {
-                autoSaveField($(this));
-            }, 500));
-        }
 
-        /**
-         * Auto-save the field value via AJAX.
-         *
-         * @param {Object} $field The jQuery object for the field.
-         */
-        function autoSaveField($field) {
-            var fieldValue;
-            var fieldName = $field.attr('name');
-
-            // Handle checkbox fields
-            if ($field.attr('type') === 'checkbox') {
-                fieldValue = [];
-                $('input[name="' + fieldName + '"]:checked').each(function() {
-                    fieldValue.push($(this).val());
-                });
-            } else {
-                fieldValue = $field.val();
-            }
-
-            $.ajax({
-                url: occ_titles_admin_vars.ajax_url,
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    action: 'occ_titles_auto_save',
-                    nonce: occ_titles_admin_vars.occ_titles_ajax_nonce,
-                    field_name: fieldName.replace('[]', ''),
-                    field_value: fieldValue
-                }
-            })
-            .done(function(response) {
-                showNotification(response.success ? 'Settings saved successfully.' : 'Failed to save settings.', response.success ? 'success' : 'error');
-            })
-            .fail(function() {
-                showNotification('Error saving settings.', 'error');
-            });
-        }
-
-        /**
-         * Debounce function to limit the rate at which a function can fire.
-         *
-         * @param {Function} func The function to debounce.
-         * @param {Number} wait The time to wait before executing the function.
-         * @returns {Function} The debounced function.
-         */
-        function debounce(func, wait) {
-            let timeout;
-            return function() {
-                const context = this;
-                const args = arguments;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(context, args), wait);
-            };
-        }
-
-        /**
-         * Show a notification message.
-         *
-         * @param {String} message The message to display.
-         * @param {String} type The type of notification (success, error).
-         */
-        function showNotification(message, type = 'success') {
-            var $notification = $('<div class="occ_titles-notification ' + type + '">' + message + '</div>');
-            $('body').append($notification);
-            $notification.fadeIn('fast');
-
-            setTimeout(function() {
-                $notification.fadeOut('slow', function() {
-                    $notification.remove();
-                });
-            }, 2000);
-        }
 
         // Variables for handling title generation and retry logic
         var originalTitle = '';
