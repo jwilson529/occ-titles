@@ -99,6 +99,10 @@
     animation: spin 0.8s linear infinite;
 }
 
+#occ_titles_meta_box .handle-actions.hide-if-no-js {
+    display: none;
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);

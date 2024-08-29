@@ -112,6 +112,14 @@ class Occ_Titles_Admin {
 			$post_type = get_post_type( intval( $_GET['post'] ) );
 			if ( in_array( $post_type, $selected_post_types, true ) ) {
 				wp_enqueue_script(
+				    'occ_titles_utils',
+				    plugin_dir_url( __FILE__ ) . 'js/occ-titles-utils.js',
+				    array( 'jquery' ),
+				    '1.0.0',
+				    true
+				);
+
+				wp_enqueue_script(
 					$this->plugin_name,
 					plugin_dir_url( __FILE__ ) . 'js/occ-titles-admin.js',
 					array( 'jquery' ),
@@ -148,19 +156,20 @@ class Occ_Titles_Admin {
 	 * @return void
 	 */
 	public function occ_titles_add_meta_box() {
-		$selected_post_types = get_option( 'occ_titles_post_types', array() );
+	    $selected_post_types = get_option( 'occ_titles_post_types', array() );
 
-		foreach ( $selected_post_types as $post_type ) {
-			add_meta_box(
-				'occ_titles_meta_box',
-				esc_html__( 'Generate SEO Titles', 'occ_titles' ),
-				array( $this, 'render_meta_box' ),
-				$post_type,
-				'side',
-				'high'
-			);
-		}
+	    foreach ( $selected_post_types as $post_type ) {
+	        add_meta_box(
+	            'occ_titles_meta_box',
+	            esc_html__( 'Generate SEO Titles', 'occ_titles' ),
+	            array( $this, 'render_meta_box' ),
+	            $post_type,
+	            'normal',
+	            'high'
+	        );
+	    }
 	}
+
 
 	/**
 	 * Render the content of the meta box.

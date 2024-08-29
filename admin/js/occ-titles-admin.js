@@ -3,35 +3,48 @@
 
     $(document).ready(function() {
 
-        // Initialize auto-save for settings fields
+        /**
+         * Move the "Generate Titles" meta box directly under the post title.
+         */
+        var $metaBox = $('#occ_titles_meta_box');
+        var $titleDiv = $('#titlediv');
+
+        if ($metaBox.length && $titleDiv.length) {
+            $metaBox.insertAfter($titleDiv);
+        }
+
+        /**
+         * Initialize auto-save for all settings fields.
+         */
         initializeAutoSave();
 
         var hasGenerated = false; // Flag to track if titles have been generated
 
-        // Initial button text
+        // Set initial button text
         $('#occ_titles_button').html('Generate Titles');
 
-        // Event listener for dropdown value change
+        // Event listener for style dropdown change
         $('#occ_titles_style').on('change', function() {
             updateButtonText();
         });
 
         /**
-         * Function to update the button text based on the selected style
+         * Update the button text based on the selected style.
          */
         function updateButtonText() {
             var selectedStyle = $('#occ_titles_style').val();
-            var styleText = $('#occ_titles_style option:selected').text(); // Get the text of the selected option
+            var styleText = $('#occ_titles_style option:selected').text();
 
-            // Determine the button text based on the hasGenerated flag
-            var buttonText = hasGenerated && selectedStyle ? 'Generate 5 More ' + styleText + ' Titles' : 'Generate Titles';
+            // Set button text based on whether titles have been generated
+            var buttonText = hasGenerated && selectedStyle ?
+                'Generate 5 More ' + styleText + ' Titles' :
+                'Generate Titles';
 
             $('#occ_titles_button').html(buttonText);
         }
 
-
         /**
-         * Initialize auto-save for all fields in the settings form.
+         * Initialize auto-save functionality for settings fields.
          */
         function initializeAutoSave() {
             $('.occ_titles-settings-form').find('input, select, textarea').on('input change', debounce(function() {
@@ -40,15 +53,15 @@
         }
 
         /**
-         * Auto-save function for input field changes.
-         * 
+         * Auto-save the field value via AJAX.
+         *
          * @param {Object} $field The jQuery object for the field.
          */
         function autoSaveField($field) {
             var fieldValue;
             var fieldName = $field.attr('name');
 
-            // Handle checkboxes
+            // Handle checkbox fields
             if ($field.attr('type') === 'checkbox') {
                 fieldValue = [];
                 $('input[name="' + fieldName + '"]:checked').each(function() {
@@ -65,16 +78,12 @@
                     data: {
                         action: 'occ_titles_auto_save',
                         nonce: occ_titles_admin_vars.occ_titles_ajax_nonce,
-                        field_name: fieldName.replace('[]', ''), // Remove [] for the option name
+                        field_name: fieldName.replace('[]', ''),
                         field_value: fieldValue
                     }
                 })
                 .done(function(response) {
-                    if (response.success) {
-                        showNotification('Settings saved successfully.');
-                    } else {
-                        showNotification('Failed to save settings.', 'error');
-                    }
+                    showNotification(response.success ? 'Settings saved successfully.' : 'Failed to save settings.', response.success ? 'success' : 'error');
                 })
                 .fail(function() {
                     showNotification('Error saving settings.', 'error');
@@ -83,7 +92,7 @@
 
         /**
          * Debounce function to limit the rate at which a function can fire.
-         * 
+         *
          * @param {Function} func The function to debounce.
          * @param {Number} wait The time to wait before executing the function.
          * @returns {Function} The debounced function.
@@ -100,7 +109,7 @@
 
         /**
          * Show a notification message.
-         * 
+         *
          * @param {String} message The message to display.
          * @param {String} type The type of notification (success, error).
          */
@@ -116,12 +125,12 @@
             }, 2000);
         }
 
-        // Variables for handling titles and retry logic
+        // Variables for handling title generation and retry logic
         var originalTitle = '';
         var retryCount = 0;
         var maxRetries = 1;
 
-        // Add spinner wrapper and text to the body
+        // Add spinner and loading text to the DOM
         $('body').append(`
             <div id="occ_titles_spinner_wrapper" class="occ-spinner-wrapper">
                 <div id="occ_titles_spinner" class="occ-spinner"></div>
@@ -137,11 +146,11 @@
             <div id="occ_keywords_display" style="margin-top: 20px; font-weight: bold;"></div>
         `);
 
-        // Event handler for the generate titles button
+        // Event handler for the "Generate Titles" button
         $('#occ_titles_button').click(function(e) {
             e.preventDefault();
 
-            hasGenerated = true; // Mark as generated when the button is clicked
+            hasGenerated = true; // Mark titles as generated
             updateButtonText();
 
             // Show the dropdown and label after the first click
@@ -149,9 +158,13 @@
                 $('.occ_titles_style_label, .occ_titles_style_dropdown').show();
             }
 
-            originalTitle = $('#editor').length ? wp.data.select('core/editor').getEditedPostAttribute('title') : $('input#title').val();
-            var content = $('#editor').length ? wp.data.select('core/editor').getEditedPostContent() : $('textarea#content').val();
-            var style = $('#occ_titles_style').val() || ''; // Get the selected style, or empty if not selected
+            originalTitle = $('#editor').length ?
+                wp.data.select('core/editor').getEditedPostAttribute('title') :
+                $('input#title').val();
+            var content = $('#editor').length ?
+                wp.data.select('core/editor').getEditedPostContent() :
+                $('textarea#content').val();
+            var style = $('#occ_titles_style').val() || ''; // Get the selected style
             var nonce = occ_titles_admin_vars.occ_titles_ajax_nonce;
 
             $('#occ_titles_spinner_wrapper').fadeIn();
@@ -159,12 +172,9 @@
             sendAjaxRequest(content, style, nonce);
         });
 
-
-
-        // Event handler for the revert title button
+        // Event handler for the "Revert Title" button
         $('#occ_titles_revert_button').click(function(e) {
-            e.preventDefault(); // Prevent the default button click behavior
-
+            e.preventDefault();
             setTitleInEditor(originalTitle);
         });
 
@@ -182,20 +192,17 @@
                 data: {
                     action: 'occ_titles_generate_titles',
                     content: content,
-                    style: style, // Include the selected style in the request
-                    nonce: occ_titles_admin_vars.occ_titles_ajax_nonce,
+                    style: style,
+                    nonce: nonce,
                 },
                 success: function(response) {
-
                     if (response.success) {
-                        var titles = response.data.titles || []; // Handle missing titles
-
-                        // Extract and display keywords and titles in the UI
+                        var titles = response.data.titles || [];
                         var keywords = extractKeywordsFromTitles(titles);
                         displayKeywords(keywords);
                         displayTitles(titles);
                         $('#occ_titles_spinner_wrapper').fadeOut();
-                        // Show the revert button if titles were generated
+
                         if (titles.length > 0) {
                             $('#occ_titles_revert_button').show();
                         }
@@ -208,6 +215,7 @@
                 }
             });
         }
+
         /**
          * Extract keywords from an array of titles.
          *
@@ -225,7 +233,7 @@
         }
 
         /**
-         * Handle AJAX errors, with retry logic.
+         * Handle AJAX errors with retry logic.
          *
          * @param {string} errorMessage The error message to display.
          */
@@ -238,7 +246,6 @@
                 alert(errorMessage + ' Retrying...');
             }
         }
-
 
         /**
          * Set the post title in the WordPress editor.
@@ -264,11 +271,9 @@
          */
         function displayKeywords(keywords) {
             var keywordsDisplay = $('#occ_keywords_display');
-            if (keywords.length) {
-                keywordsDisplay.html('Keywords used in density calculation: ' + keywords.join(', '));
-            } else {
-                keywordsDisplay.html('No keywords generated.');
-            }
+            keywordsDisplay.html(keywords.length ?
+                'Keywords used in density calculation: ' + keywords.join(', ') :
+                'No keywords generated.');
         }
 
         /**
@@ -277,8 +282,7 @@
          * @param {Array} titles An array of title objects to display.
          */
         function displayTitles(titles) {
-            // Remove any existing titles table
-            $('#occ_titles_table').remove();
+            $('#occ_titles_table').remove(); // Remove existing titles table
 
             if (Array.isArray(titles)) {
                 var titlesTable = $('<table id="occ_titles_table" class="widefat fixed" cellspacing="0"><thead><tr><th>Title</th><th>Character Count</th><th>Style</th><th>SEO Grade</th><th>Sentiment</th><th>Keyword Density</th><th>Readability</th><th>Overall Score</th></tr></thead><tbody></tbody></table>');
@@ -294,12 +298,10 @@
                     var readabilityScore = calculateReadabilityScore(title.text);
                     var overallScore = calculateOverallScore(seoGrade.score, sentiment, keywordDensity, readabilityScore);
 
-                    // Highlight the title with the best overall score
                     if (overallScore > bestTitle.score) {
                         bestTitle = { title: title.text, score: overallScore };
                     }
 
-                    // Create a table row for each title
                     var titleRow = $('<tr></tr>');
                     var titleCell = $('<td></td>').append($('<a href="#">').text(title.text).click(function(e) {
                         e.preventDefault();
@@ -308,7 +310,6 @@
                         setTitleInEditor(title.text);
                     }));
 
-                    // Append cells to the row
                     titleRow.append(
                         titleCell,
                         $('<td></td>').text(charCount),
@@ -323,7 +324,6 @@
                     tableBody.append(titleRow);
                 });
 
-                // Highlight the best title row
                 tableBody.find('tr').each(function() {
                     if ($(this).find('a').text() === bestTitle.title) {
                         $(this).css('background-color', '#d4edda');
@@ -334,104 +334,6 @@
             } else {
                 alert('Unexpected response format. Please try again.');
             }
-        }
-
-
-        /**
-         * Calculate SEO grade based on character count.
-         *
-         * @param {number} charCount The character count of the title.
-         * @return {Object} The SEO grade, score, and label.
-         */
-        function calculateSEOGrade(charCount) {
-            var grade = '';
-            var score = 0;
-            var label = '';
-
-            if (charCount >= 50 && charCount <= 60) {
-                grade = '🟢';
-                score = 100;
-                label = 'Excellent (50-60 characters)';
-            } else if (charCount < 50) {
-                grade = '🟡';
-                score = 75;
-                label = 'Average (below 50 characters)';
-            } else {
-                grade = '🔴';
-                score = 50;
-                label = 'Poor (above 60 characters)';
-            }
-
-            return { dot: grade, score: score, label: label };
-        }
-
-        /**
-         * Get emoji for sentiment analysis result.
-         *
-         * @param {string} sentiment The sentiment of the title.
-         * @return {string} The emoji representing the sentiment.
-         */
-        function getEmojiForSentiment(sentiment) {
-            switch (sentiment) {
-                case 'Positive':
-                    return '😊';
-                case 'Negative':
-                    return '😟';
-                case 'Neutral':
-                    return '😐';
-                default:
-                    return '❓';
-            }
-        }
-
-        /**
-         * Calculate keyword density in the title text.
-         *
-         * @param {string} text The title text.
-         * @param {Array} keywords The keywords to check for density.
-         * @return {number} The keyword density as a percentage.
-         */
-        function calculateKeywordDensity(text, keywords) {
-            if (!keywords || !keywords.length) {
-                return 0;
-            }
-
-            var keywordCount = keywords.reduce(function(count, keyword) {
-                return count + (text.match(new RegExp(keyword, 'gi')) || []).length;
-            }, 0);
-            var wordCount = text.split(' ').length;
-            return keywordCount / wordCount;
-        }
-
-        /**
-         * Calculate readability score of the title text.
-         *
-         * @param {string} text The title text.
-         * @return {number} The readability score.
-         */
-        function calculateReadabilityScore(text) {
-            var wordCount = text.split(' ').length;
-            var sentenceCount = text.split(/[.!?]+/).length;
-            var syllableCount = text.split(/[aeiouy]+/).length;
-
-            return ((wordCount / sentenceCount) + (syllableCount / wordCount)) * 0.4;
-        }
-
-        /**
-         * Calculate the overall score of the title based on several factors.
-         *
-         * @param {number} seoScore The SEO score of the title.
-         * @param {string} sentiment The sentiment of the title.
-         * @param {number} keywordDensity The keyword density in the title.
-         * @param {number} readabilityScore The readability score of the title.
-         * @return {number} The overall score of the title.
-         */
-        function calculateOverallScore(seoScore, sentiment, keywordDensity, readabilityScore) {
-            var sentimentScore = sentiment === 'Positive' ? 100 : (sentiment === 'Neutral' ? 75 : 50);
-            var keywordDensityScore = keywordDensity >= 0.01 && keywordDensity <= 0.03 ? 100 : 50;
-            var readabilityScoreNormalized = 100 - Math.abs(readabilityScore - 10) * 10;
-
-            return (seoScore + sentimentScore + keywordDensityScore + readabilityScoreNormalized) / 4;
         }
 
     });
