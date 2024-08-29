@@ -300,4 +300,46 @@ class Occ_Titles_OpenAI_Helper {
 
 		return 'Run cancelled successfully.';
 	}
+
+	/**
+	 * Checks if the given Assistant ID is valid.
+	 *
+	 * @since 1.0.0
+	 * @param string $assistant_id The Assistant ID to validate.
+	 * @param string $api_key The OpenAI API key.
+	 * @return bool True if the Assistant ID is valid, false otherwise.
+	 */
+	public function occ_titles_is_assistant_valid( $assistant_id, $api_key ) {
+	    if ( empty( $assistant_id ) || empty( $api_key ) ) {
+	        
+	        return false;
+	    }
+
+	    $response = wp_remote_get(
+	        "https://api.openai.com/v1/assistants/{$assistant_id}",
+	        array(
+	            'headers' => array(
+	                'Content-Type'  => 'application/json',
+	                'Authorization' => 'Bearer ' . $api_key,
+	                'OpenAI-Beta'   => 'assistants=v2',
+	            ),
+	        )
+	    );
+
+	    if ( is_wp_error( $response ) ) {	        
+	        return false;
+	    }
+
+	    $body = wp_remote_retrieve_body( $response );
+	    $data = json_decode( $body, true );
+
+	    if ( isset( $data['id'] ) && $data['id'] === $assistant_id ) {	        
+	        return true;
+	    } else {	        
+	        return false;
+	    }
+	}
+
+
+
 }

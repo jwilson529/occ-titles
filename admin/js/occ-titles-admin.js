@@ -11,17 +11,6 @@
         // Initial button text
         $('#occ_titles_button').html('Generate Titles');
 
-        // Event listener for the Generate Titles button
-        $('#occ_titles_button').on('click', function() {
-            hasGenerated = true; // Mark as generated when the button is clicked
-            updateButtonText();
-
-            // Show the dropdown and label after the first click
-            if (hasGenerated) {
-                $('.occ_titles_style_label, .occ_titles_style_dropdown').show();
-            }
-        });
-
         // Event listener for dropdown value change
         $('#occ_titles_style').on('change', function() {
             updateButtonText();
@@ -152,9 +141,17 @@
         $('#occ_titles_button').click(function(e) {
             e.preventDefault();
 
+            hasGenerated = true; // Mark as generated when the button is clicked
+            updateButtonText();
+
+            // Show the dropdown and label after the first click
+            if (hasGenerated) {
+                $('.occ_titles_style_label, .occ_titles_style_dropdown').show();
+            }
+
             originalTitle = $('#editor').length ? wp.data.select('core/editor').getEditedPostAttribute('title') : $('input#title').val();
             var content = $('#editor').length ? wp.data.select('core/editor').getEditedPostContent() : $('textarea#content').val();
-            var style = $('#occ_titles_style_dropdown').val() || ''; // Get the selected style, or empty if not selected
+            var style = $('#occ_titles_style').val() || ''; // Get the selected style, or empty if not selected
             var nonce = occ_titles_admin_vars.occ_titles_ajax_nonce;
 
             $('#occ_titles_spinner_wrapper').fadeIn();
@@ -180,16 +177,15 @@
          */
         function sendAjaxRequest(content, style, nonce) {
             $.ajax({
-                url: occ_titles_admin_vars.ajax_url,
+                url: occ_titles_admin_vars.ajax_url + '?' + new Date().getTime(),
                 type: 'POST',
                 data: {
                     action: 'occ_titles_generate_titles',
                     content: content,
                     style: style, // Include the selected style in the request
-                    nonce: nonce
+                    nonce: occ_titles_admin_vars.occ_titles_ajax_nonce,
                 },
                 success: function(response) {
-                    $('#occ_titles_spinner_wrapper').fadeOut();
 
                     if (response.success) {
                         var titles = response.data.titles || []; // Handle missing titles
@@ -198,17 +194,17 @@
                         var keywords = extractKeywordsFromTitles(titles);
                         displayKeywords(keywords);
                         displayTitles(titles);
-
+                        $('#occ_titles_spinner_wrapper').fadeOut();
                         // Show the revert button if titles were generated
                         if (titles.length > 0) {
                             $('#occ_titles_revert_button').show();
                         }
                     } else {
-                        handleAjaxError(response.data.message);
+                        handleAjaxError(response.data.message, content, style, nonce);
                     }
                 },
                 error: function() {
-                    handleAjaxError('Error generating titles.');
+                    handleAjaxError('Error generating titles.', content, style, nonce);
                 }
             });
         }
@@ -233,15 +229,16 @@
          *
          * @param {string} errorMessage The error message to display.
          */
-        function handleAjaxError(errorMessage) {
+        function handleAjaxError(errorMessage, content, style, nonce) {
             if (retryCount < maxRetries) {
                 retryCount++;
-                sendAjaxRequest();
+                sendAjaxRequest(content, style, nonce);
             } else {
                 $('#occ_titles_spinner_wrapper').fadeOut();
                 alert(errorMessage + ' Retrying...');
             }
         }
+
 
         /**
          * Set the post title in the WordPress editor.

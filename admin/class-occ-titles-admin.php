@@ -2,8 +2,8 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * Handles the admin-specific hooks for enqueuing stylesheets and JavaScript, and provides
- * the functionality for generating SEO-optimized titles using OpenAI.
+ * Handles the admin-specific hooks for enqueuing stylesheets and JavaScript, 
+ * and provides the functionality for generating SEO-optimized titles using OpenAI.
  *
  * @link       https://oneclickcontent.com
  * @since      1.0.0
@@ -142,52 +142,63 @@ class Occ_Titles_Admin {
 	}
 
 	/**
-	 * Add the "Generate Titles" button and style dropdown to the post editor.
+	 * Add the "Generate Titles" meta box to the post editor.
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function occ_titles_add_button() {
-		global $pagenow, $post;
-
+	public function occ_titles_add_meta_box() {
 		$selected_post_types = get_option( 'occ_titles_post_types', array() );
 
-		// Check if the current page is the post editor and if the post type is selected.
-		if ( ( 'post-new.php' === $pagenow || 'post.php' === $pagenow ) && isset( $post ) ) {
-			if ( in_array( $post->post_type, $selected_post_types, true ) ) {
-				echo '<div id="occ_titles--controls-wrapper" style="margin-bottom: 20px;">';
-
-				// Hidden dropdown for Style selection initially
-				echo '<label for="occ_titles_style" style="margin-right: 10px; display: none;" class="occ_titles_style_label">' . esc_html__( 'Select Style:', 'occ_titles' ) . '</label>';
-				echo '<select id="occ_titles_style" name="occ_titles_style" style="display: none;" class="occ_titles_style_dropdown">';
-				echo '<option value="" disabled selected>' . esc_html__( 'Choose a Style...', 'occ_titles' ) . '</option>'; // Placeholder option
-				$styles = array(
-					'How-To',
-					'Listicle',
-					'Question',
-					'Command',
-					'Intriguing Statement',
-					'News Headline',
-					'Comparison',
-					'Benefit-Oriented',
-					'Storytelling',
-					'Problem-Solution',
-				);
-				foreach ( $styles as $style ) {
-					echo '<option value="' . esc_attr( strtolower( $style ) ) . '">' . esc_html( $style ) . '</option>';
-				}
-				echo '</select>';
-
-				// Generate Titles Button.
-				echo '<button id="occ_titles_button" class="button button-primary">' . esc_html__( 'Generate Titles', 'occ_titles' ) . '</button>';
-				echo '</div>';
-			}
+		foreach ( $selected_post_types as $post_type ) {
+			add_meta_box(
+				'occ_titles_meta_box',
+				esc_html__( 'Generate SEO Titles', 'occ_titles' ),
+				array( $this, 'render_meta_box' ),
+				$post_type,
+				'side',
+				'high'
+			);
 		}
 	}
 
+	/**
+	 * Render the content of the meta box.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function render_meta_box() {
+		echo '<div id="occ_titles--controls-wrapper" style="margin-bottom: 20px;">';
 
+		// Hidden dropdown for Style selection initially.
+		echo '<label for="occ_titles_style" style="margin-right: 10px; display: none;" class="occ_titles_style_label">' . esc_html__( 'Select Style:', 'occ_titles' ) . '</label>';
+		echo '<select id="occ_titles_style" name="occ_titles_style" style="display: none;" class="occ_titles_style_dropdown">';
+		echo '<option value="" disabled selected>' . esc_html__( 'Choose a Style...', 'occ_titles' ) . '</option>'; // Placeholder option.
 
+		$styles = array(
+			'How-To',
+			'Listicle',
+			'Question',
+			'Command',
+			'Intriguing Statement',
+			'News Headline',
+			'Comparison',
+			'Benefit-Oriented',
+			'Storytelling',
+			'Problem-Solution',
+		);
 
+		foreach ( $styles as $style ) {
+			echo '<option value="' . esc_attr( strtolower( $style ) ) . '">' . esc_html( $style ) . '</option>';
+		}
+
+		echo '</select>';
+
+		// Generate Titles Button.
+		echo '<button id="occ_titles_button" class="button button-primary">' . esc_html__( 'Generate Titles', 'occ_titles' ) . '</button>';
+		echo '</div>';
+	}
 
 	/**
 	 * Handle the AJAX request to generate titles using OpenAI.
@@ -196,49 +207,49 @@ class Occ_Titles_Admin {
 	 * @return void
 	 */
 	public function generate_titles() {
+		// Check nonce for security.
+		if ( ! check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'occ_titles' ) ) );
+		}
 
-	    // Check nonce for security.
-	    if ( ! check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce', false ) ) {
-	        wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'occ_titles' ) ) );
-	    }
+		// Verify the user has the appropriate capability.
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'occ_titles' ) ) );
+		}
 
-	    // Verify the user has the appropriate capability.
-	    if ( ! current_user_can( 'edit_posts' ) ) {
-	        wp_send_json_error( array( 'message' => __( 'Permission denied.', 'occ_titles' ) ) );
-	    }
+		// Sanitize and get incoming data.
+		$content      = isset( $_POST['content'] ) ? sanitize_text_field( wp_unslash( $_POST['content'] ) ) : '';
+		$style        = isset( $_POST['style'] ) ? sanitize_text_field( wp_unslash( $_POST['style'] ) ) : '';
+		$api_key      = get_option( 'occ_titles_openai_api_key' );
+		$assistant_id = get_option( 'occ_titles_assistant_id' );
 
-	    // Sanitize and get incoming data.
-	    $content      = isset( $_POST['content'] ) ? sanitize_text_field( wp_unslash( $_POST['content'] ) ) : '';
-	    $style        = isset( $_POST['style'] ) ? sanitize_text_field( wp_unslash( $_POST['style'] ) ) : '';
-	    $api_key      = get_option( 'occ_titles_openai_api_key' );
-	    $assistant_id = get_option( 'occ_titles_assistant_id' );
+		// Check for missing data.
+		if ( empty( $content ) || empty( $api_key ) || empty( $assistant_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Missing data.', 'occ_titles' ) ) );
+		}
 
-	    // Check for missing data.
-	    if ( empty( $content ) || empty( $api_key ) || empty( $assistant_id ) ) {
-	        wp_send_json_error( array( 'message' => __( 'Missing data.', 'occ_titles' ) ) );
-	    }
+		// Modify the query with the selected style, if provided.
+		$query = $content;
+		if ( ! empty( $style ) ) {
+			$query .= "\n\nStyle: " . ucfirst( $style ); // Append the user-provided style to the query.
+		} else {
+			$query .= "\n\nStyle: Choose the most suitable style"; // Instruct the Assistant to choose the style.
+		}
 
-	    // Modify the query with the selected style, if provided.
-	    $query = $content;
-	    if ( ! empty( $style ) ) {
-	        $query .= "\n\nStyle: " . ucfirst( $style ); // Append the style to the query
-	    }
+		// Step 1: Create a new thread.
+		$thread_id = $this->openai_helper->create_thread( $api_key );
+		if ( ! $thread_id ) {
+			wp_send_json_error( array( 'message' => __( 'Failed to create thread.', 'occ_titles' ) ) );
+		}
 
-	    // Step 1: Create a new thread.
-	    $thread_id = $this->openai_helper->create_thread( $api_key );
-	    if ( ! $thread_id ) {
-	        wp_send_json_error( array( 'message' => __( 'Failed to create thread.', 'occ_titles' ) ) );
-	    }
+		// Step 2: Add message and run thread.
+		$result = $this->openai_helper->add_message_and_run_thread( $api_key, $thread_id, $assistant_id, $query );
 
-	    // Step 2: Add message and run thread.
-	    $result = $this->openai_helper->add_message_and_run_thread( $api_key, $thread_id, $assistant_id, $query );
-	    if ( is_string( $result ) ) {
-	        wp_send_json_error( array( 'message' => $result ) );
-	    } elseif ( isset( $result['titles'] ) ) {
-	        wp_send_json_success( $result );
-	    } else {
-	        wp_send_json_error( array( 'message' => __( 'Unexpected response format.', 'occ_titles' ) ) );
-	    }
+		// Check if the result contains the expected data structure.
+		if ( isset( $result['titles'] ) && is_array( $result['titles'] ) ) {
+			wp_send_json_success( array( 'titles' => $result['titles'] ) );
+		} else {
+			wp_send_json_error( array( 'message' => __( 'Unexpected response format.', 'occ_titles' ) ) );
+		}
 	}
-
 }

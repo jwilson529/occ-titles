@@ -316,6 +316,28 @@ input:checked + .slider:before {
     box-shadow: 0 0 0 2px #005177;
 }
 
+#occ_titles--controls-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#occ_titles--controls-wrapper label,
+#occ_titles--controls-wrapper select,
+#occ_titles--controls-wrapper button {
+    width: 100%; /* Ensure elements take full width */
+    box-sizing: border-box; /* Include padding and border in the element's width and height */
+}
+
+#occ_titles--controls-wrapper select {
+    margin-top: 5px;
+}
+
+#occ_titles--controls-wrapper button {
+    margin-top: 10px;
+    align-self: flex-start; /* Align the button to the left */
+}
+
 
 @keyframes fadeIn {
     from {
