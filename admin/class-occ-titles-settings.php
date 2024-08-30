@@ -66,6 +66,7 @@ class Occ_Titles_Settings {
 			array( 'sanitize_callback' => 'sanitize_text_field' )
 		);
 
+
 		add_settings_section(
 			'occ_titles_settings_section',
 			__( 'OneClickContent - Titles Settings', 'occ_titles' ),
@@ -82,12 +83,19 @@ class Occ_Titles_Settings {
 			array( 'label_for' => 'occ_titles_openai_api_key' )
 		);
 
+
 		$api_key = get_option( 'occ_titles_openai_api_key' );
 
 		// Only register additional settings if API key is valid.
 		if ( ! empty( $api_key ) && self::validate_openai_api_key( $api_key ) ) {
 			register_setting( 'occ_titles_settings', 'occ_titles_post_types' );
 			register_setting( 'occ_titles_settings', 'occ_titles_assistant_id' );
+			register_setting(
+			    'occ_titles_settings',
+			    'occ_titles_openai_model',
+			    array( 'sanitize_callback' => 'sanitize_text_field' )
+			);
+
 
 			add_settings_field(
 				'occ_titles_post_types',
@@ -105,6 +113,16 @@ class Occ_Titles_Settings {
 				'occ_titles_settings_section',
 				array( 'label_for' => 'occ_titles_assistant_id' )
 			);
+
+			add_settings_field(
+			    'occ_titles_openai_model',
+			    __( 'OpenAI Model', 'occ_titles' ),
+			    array( $this, 'occ_titles_openai_model_callback' ),
+			    'occ_titles_settings',
+			    'occ_titles_settings_section',
+			    array( 'label_for' => 'occ_titles_openai_model' )
+			);
+
 		} elseif ( ! get_settings_errors( 'invalid-api-key' ) ) {
 				add_settings_error(
 					'occ_titles_openai_api_key',
@@ -114,6 +132,34 @@ class Occ_Titles_Settings {
 					'error'
 				);
 		}
+	}
+
+	/**
+	 * Callback function for the OpenAI Model setting field.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function occ_titles_openai_model_callback() {
+	    $selected_model = get_option('occ_titles_openai_model', '');
+	    $api_key = get_option('occ_titles_openai_api_key');
+
+	    if ( ! empty( $api_key ) ) {
+	        $models = self::validate_openai_api_key( $api_key );
+
+	        if ( $models && is_array( $models ) ) {
+	            echo '<select id="occ_titles_openai_model" name="occ_titles_openai_model">';
+	            foreach ( $models as $model ) {
+	                echo '<option value="' . esc_attr( $model ) . '"' . selected( $selected_model, $model, false ) . '>' . esc_html( $model ) . '</option>';
+	            }
+	            echo '</select>';
+	            echo '<p class="description">' . esc_html__('Select the OpenAI model to use for the assistant.', 'occ_titles') . '</p>';
+	        } else {
+	            echo '<p class="error">' . esc_html__('Unable to retrieve models. Please check your API key.', 'occ_titles') . '</p>';
+	        }
+	    } else {
+	        echo '<p class="error">' . esc_html__('Please enter a valid OpenAI API key first.', 'occ_titles') . '</p>';
+	    }
 	}
 
 	/**
@@ -238,32 +284,58 @@ class Occ_Titles_Settings {
 	}
 
 	/**
-	 * Validates the OpenAI API key.
+	 * Validates the OpenAI API key and fetches models that support function calling.
 	 *
 	 * @since 1.0.0
 	 * @param string $api_key The API key to validate.
-	 * @return bool True if valid, false otherwise.
+	 * @return array|bool List of models if successful, false otherwise.
 	 */
 	public static function validate_openai_api_key( $api_key ) {
-		$response = wp_remote_get(
-			'https://api.openai.com/v1/models',
-			array(
-				'headers' => array(
-					'Content-Type'  => 'application/json',
-					'Authorization' => 'Bearer ' . $api_key,
-				),
-			)
-		);
+	    
 
-		if ( is_wp_error( $response ) ) {
-			return false;
-		}
+	    $response = wp_remote_get(
+	        'https://api.openai.com/v1/models',
+	        array(
+	            'headers' => array(
+	                'Content-Type'  => 'application/json',
+	                'Authorization' => 'Bearer ' . $api_key,
+	            ),
+	        )
+	    );
 
-		$body = wp_remote_retrieve_body( $response );
-		$data = json_decode( $body, true );
+	    if ( is_wp_error( $response ) ) {
+	        
+	        return false;
+	    }
 
-		return isset( $data['data'] ) && is_array( $data['data'] );
+	    $body = wp_remote_retrieve_body( $response );
+	    $data = json_decode( $body, true );
+
+	    
+
+	    // Timestamps for June 13, 2023 and November 6, 2023
+	    $function_calling_cutoff = 1686614400;
+	    $parallel_function_calling_cutoff = 1699228800;
+
+	    if ( isset( $data['data'] ) && is_array( $data['data'] ) ) {
+	        
+
+	        // Filter models that support function calling.
+	        $models = array_filter($data['data'], function($model) use ($function_calling_cutoff) {
+	            return isset($model['created']) && $model['created'] >= $function_calling_cutoff;
+	        });
+
+	        // Return an array of model IDs.
+	        return array_map(function($model) {
+	            return $model['id'];
+	        }, $models);
+	    }
+
+	    
+	    return false;
 	}
+
+
 
 	/**
 	 * Creates an assistant using OpenAI's API with Function Calling.
@@ -320,6 +392,8 @@ class Occ_Titles_Settings {
 	        ),
 	    );
 
+	    $model = get_option('occ_titles_openai_model', 'gpt-4o-mini'); // Default to gpt-4o-mini if not set.
+
 	    $payload = array(
 	        'description' => esc_html__('Assistant for generating SEO-optimized titles.', 'occ_titles'),
 	        'instructions' => wp_json_encode($initial_prompt),
@@ -330,9 +404,10 @@ class Occ_Titles_Settings {
 	                'function' => $function_definition,
 	            ),
 	        ),
-	        'model' => 'gpt-4o',
+	        'model' => $model, // Use the selected model here.
 	        'response_format' => array('type' => 'json_object'),
 	    );
+
 
 	    $response = wp_remote_post(
 	        'https://api.openai.com/v1/assistants',
@@ -405,24 +480,42 @@ class Occ_Titles_Settings {
 	 * @return void
 	 */
 	public static function occ_titles_auto_save() {
-		// Verify the nonce for security.
-		if ( ! check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid nonce', 'occ_titles' ) ) );
-		}
+	    // Verify the nonce for security.
+	    if (!check_ajax_referer('occ_titles_ajax_nonce', 'nonce', false)) {
+	        wp_send_json_error(array('message' => __('Invalid nonce', 'occ_titles')));
+	    }
 
-		// Sanitize and update the option.
-		$field_name  = sanitize_text_field( $_POST['field_name'] );
-		$field_value = $_POST['field_value'];
+	    // Sanitize and update the option.
+	    $field_name  = sanitize_text_field($_POST['field_name']);
+	    $field_value = $_POST['field_value'];
 
-		if ( is_array( $field_value ) ) {
-			$field_value = array_map( 'sanitize_text_field', $field_value );
-		} else {
-			$field_value = sanitize_text_field( $field_value );
-		}
+	    if (is_array($field_value)) {
+	        $field_value = array_map('sanitize_text_field', $field_value);
+	    } else {
+	        $field_value = sanitize_text_field($field_value);
+	    }
 
-		update_option( $field_name, $field_value );
-
-		// Send success response.
-		wp_send_json_success();
+	    // Validate the Assistant ID if the field being saved is the Assistant ID
+	    if ($field_name === 'occ_titles_assistant_id') {
+	        $instance = new self(); // Create an instance to use non-static methods
+	        if (!$instance->validate_assistant_id($field_value)) {
+	            // Use the existing method to create a new assistant
+	            $new_assistant_id = $instance->occ_titles_create_assistant();
+	            if ($new_assistant_id) {
+	                $field_value = $new_assistant_id;
+	                update_option($field_name, $field_value);
+	                wp_send_json_success(array('message' => __('Invalid Assistant ID. A new one has been created.', 'occ_titles'), 'new_assistant_id' => $new_assistant_id));
+	            } else {
+	                wp_send_json_error(array('message' => __('Failed to create a new Assistant ID.', 'occ_titles')));
+	            }
+	        } else {
+	            update_option($field_name, $field_value);
+	            wp_send_json_success(array('message' => __('Assistant ID is valid and settings saved successfully.', 'occ_titles')));
+	        }
+	    } else {
+	        update_option($field_name, $field_value);
+	        wp_send_json_success(array('message' => __('Settings saved successfully.', 'occ_titles')));
+	    }
 	}
+
 }

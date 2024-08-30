@@ -22,7 +22,8 @@
 }
 
 #occ_titles_table td.emoji {
-    font-size: 3em; /* Increase emoji size */
+    font-size: 3em;
+    /* Increase emoji size */
 }
 
 #occ_titles_table tr.best-title {
@@ -52,6 +53,17 @@
     display: inline-flex;
     align-items: center;
     border-radius: 4px;
+    text-align: center; /* Ensure text is centered */
+    justify-content: center; /* Center contents horizontally */
+}
+
+#occ_titles_revert_button img,
+#occ_titles_button img,
+#occ_titles_create_assistant img {
+    margin-right: 8px; /* Space between the icon and text */
+    width: 20px; /* Set a fixed width for the SVG */
+    height: 20px; /* Set a fixed height for the SVG */
+    vertical-align: middle;
 }
 
 #occ_titles_revert_button:hover,
@@ -72,6 +84,25 @@
     outline: none;
     box-shadow: 0 0 0 2px #005177;
 }
+
+#occ_titles--controls-wrapper label,
+#occ_titles--controls-wrapper select,
+#occ_titles--controls-wrapper button {
+    max-width: 100%;
+    width: auto;
+    box-sizing: border-box;
+    word-wrap: break-word;
+}
+
+#occ_titles--controls-wrapper button {
+    margin-top: 10px;
+    align-self: flex-start;
+}
+
+button#occ_titles_generate_button_block {
+    border: none;
+}
+
 
 /* ===== Spinner Styles ===== */
 .occ-spinner-wrapper {
@@ -210,11 +241,11 @@
     border-radius: 50%;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: #0073aa;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translateX(26px);
 }
 
@@ -235,16 +266,24 @@ input:checked + .slider:before {
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     font-size: 14px;
-    display: none; /* Hidden by default */
+    display: none;    
+    height: 50px; /* Set a fixed height */
+    line-height: 30px; /* Adjust line-height to vertically center the text */
+    display: flex;
+    align-items: center; /* Ensure text is centered vertically */
+    justify-content: center; /* Center the text horizontally */
 }
 
 .occ_titles-notification.success {
-    background-color: #28a745; /* Success - Green */
+    background-color: #28a745;
+    /* Success - Green */
 }
 
 .occ_titles-notification.error {
-    background-color: #dc3545; /* Error - Red */
+    background-color: #dc3545;
+    /* Error - Red */
 }
+
 
 /* ===== Controls Wrapper Styles ===== */
 #occ_titles--controls-wrapper {
@@ -254,20 +293,8 @@ input:checked + .slider:before {
     margin-bottom: 20px;
 }
 
-#occ_titles--controls-wrapper label,
-#occ_titles--controls-wrapper select,
-#occ_titles--controls-wrapper button {
-/*    width: 100%;*/
-    box-sizing: border-box;
-}
-
 #occ_titles--controls-wrapper select {
     margin-top: 5px;
-}
-
-#occ_titles--controls-wrapper button {
-    margin-top: 10px;
-    align-self: flex-start;
 }
 
 .occ_titles_style_label {
@@ -288,8 +315,13 @@ input:checked + .slider:before {
 
 /* ===== Animations ===== */
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes fadeIn {
@@ -297,6 +329,7 @@ input:checked + .slider:before {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -308,6 +341,7 @@ input:checked + .slider:before {
         opacity: 1;
         transform: translateY(0);
     }
+
     to {
         opacity: 0;
         transform: translateY(-10px);
@@ -326,3 +360,46 @@ input:checked + .slider:before {
 .occ_titles-notification.fade-out {
     animation: fadeOut 0.5s forwards;
 }
+
+
+/* ===== Metabox styles ===== */
+#occ_titles_meta_box {
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+#occ_titles_meta_box .postbox-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+#occ_titles_meta_box .inside {
+    padding: 15px;
+}
+
+.block-editor-page #occ_titles_block_wrapper {
+    min-width: 100%;
+}
+
+.wp-block-post-title {
+    text-align: center; /* Center the title text */
+    width: 100%; /* Ensure the title takes up the full width */
+}
+
+#occ_titles_svg_button {
+    position: relative;
+    right: 50%;
+    left: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.block-editor-page #occ_titles_table_container {
+    max-width: 100%;
+}
+
