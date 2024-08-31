@@ -6,7 +6,7 @@
         var isBlockEditor = typeof wp !== 'undefined' && typeof wp.data !== 'undefined';
 
         function getSvgImage() {
-            return '<img src="' + occ_titles_admin_vars.svg_url + '" alt="Generate Titles" style="width: 30px; height: 30px; vertical-align: bottom; cursor: pointer;" />';
+            return '<img src="' + occ_titles_admin_vars.svg_url + '" alt="Generate Titles" />';
         }
 
         if (!isBlockEditor) {
@@ -47,6 +47,27 @@
                         // Insert the container for the titles table
                         $blockTitle.closest('.wp-block-post-title').after('<div id="occ_titles_table_container" style="margin-top: 20px;"></div>');
 
+                        // Add revert button, dropdown, and keywords display area after title div in Block Editor
+                        $('#occ_titles_table_container').after(`
+                            <div id="occ_titles_controls_container" style="margin-top: 20px;">
+                                <button id="occ_titles_revert_button" class="occ-titles-revert-button" style="display:none;">
+                                    <span class="dashicons dashicons-undo" style="margin-right: 5px;"></span> Revert To Original Title
+                                </button>
+                                
+                                <div id="occ_titles--controls-wrapper" style="margin-bottom: 20px; display: none;">
+                                    <label for="occ_titles_style" style="margin-right: 10px;" class="occ_titles_style_label">Select Style:</label>
+                                    <select id="occ_titles_style" name="occ_titles_style" class="occ_titles_style_dropdown">
+                                        <option value="" disabled selected>Choose a Style...</option>
+                                        ${['How-To', 'Listicle', 'Question', 'Command', 'Intriguing Statement', 'News Headline', 'Comparison', 'Benefit-Oriented', 'Storytelling', 'Problem-Solution']
+                                            .map(style => `<option value="${style.toLowerCase()}">${style}</option>`).join('')}
+                                    </select>
+                                    <button id="occ_titles_button" class="button button-primary">Generate Titles</button>
+                                </div>
+
+                                <div id="occ_keywords_display" style="margin-top: 20px; font-weight: bold;"></div>
+                            </div>
+                        `);
+
                         observer.disconnect(); // Stop observing once the element is added
                     }
                 });
@@ -58,13 +79,30 @@
             });
         }
 
-        // Add revert button and keywords display area after title div
+
+        // Add revert button, dropdown, and keywords display area after title div
         $('#occ_titles_table_container').after(`
-            <button id="occ_titles_revert_button" class="occ-titles-revert-button" style="display:none;">
-                <span class="dashicons dashicons-undo" style="margin-right: 5px;"></span> Revert To Original Title
-            </button>
-            <div id="occ_keywords_display" style="margin-top: 20px; font-weight: bold;"></div>
+            <div id="occ_titles_controls_container" style="margin-top: 20px;">
+                <button id="occ_titles_revert_button" class="occ-titles-revert-button" style="display:none;">
+                    <span class="dashicons dashicons-undo" style="margin-right: 5px;"></span> Revert To Original Title
+                </button>
+                
+                <div id="occ_titles--controls-wrapper" style="margin-bottom: 20px; display: none;">
+                    <label for="occ_titles_style" style="margin-right: 10px;" class="occ_titles_style_label">Select Style:</label>
+                    <select id="occ_titles_style" name="occ_titles_style" class="occ_titles_style_dropdown">
+                        <option value="" disabled selected>Choose a Style...</option>
+                        ${['How-To', 'Listicle', 'Question', 'Command', 'Intriguing Statement', 'News Headline', 'Comparison', 'Benefit-Oriented', 'Storytelling', 'Problem-Solution']
+                            .map(style => `<option value="${style.toLowerCase()}">${style}</option>`).join('')}
+                    </select>
+                    <button id="occ_titles_button" class="button button-primary">Generate Titles</button>
+                </div>
+
+                <div id="occ_keywords_display" style="margin-top: 20px; font-weight: bold;"></div>
+            </div>
         `);
+
+
+
 
         var hasGenerated = false; // Flag to track if titles have been generated
 
@@ -169,6 +207,7 @@
 
                         if (titles.length > 0) {
                             $('#occ_titles_revert_button').show();
+                            $('#occ_titles--controls-wrapper').show();
                         }
                     } else {
                         handleAjaxError(response.data.message, content, style, nonce);

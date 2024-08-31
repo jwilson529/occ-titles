@@ -209,7 +209,7 @@ class Occ_Titles_Admin {
 	 * @return void
 	 */
 	public function render_meta_box() {
-		echo '<div id="occ_titles--controls-wrapper" style="margin-bottom: 20px;">';
+		echo '<div id="occ_titles--controls-wrapper" style="margin-bottom: 20px; display:none;">';
 
 		// Hidden dropdown for Style selection initially.
 		echo '<label for="occ_titles_style" style="margin-right: 10px; display: none;" class="occ_titles_style_label">' . esc_html__( 'Select Style:', 'occ_titles' ) . '</label>';
