@@ -14,10 +14,10 @@
         };
     }
 
-    // Initialize auto-save functionality for settings fields
+    // Initialize auto-save functionality for settings fields, excluding the API key field
     function initializeAutoSave() {
         console.log('initializeAutoSave');
-        $('.occ_titles-settings-form').find('input, select, textarea').on('input change', debounce(function() {
+        $('.occ_titles-settings-form').find('input, select, textarea').not('[name="occ_titles_openai_api_key"]').on('input change', debounce(function() {
             showNotification('Saving settings....', 'success');
             autoSaveField($(this));
         }, 500));
@@ -98,6 +98,100 @@
             });
         }, type === 'success' && message.includes('New Assistant ID') ? 3000 : 2000); // Extend time for important messages
     }
+
+    /**
+     * Monitor the API key field for input and paste events.
+     */
+    const apiKeyField = $('input[name="occ_titles_openai_api_key"]');
+
+    apiKeyField.on('input paste', debounce(function() {
+        const apiKey = $(this).val();
+
+        // Add the spinner with a message
+        addSpinnerWithMessage(apiKeyField, 'Validating API key...');
+
+        // Perform an AJAX request to save the API key first
+        $.ajax({
+            url: occ_titles_admin_vars.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'occ_titles_auto_save',
+                nonce: occ_titles_admin_vars.occ_titles_ajax_nonce,
+                field_name: 'occ_titles_openai_api_key',
+                field_value: apiKey
+            }
+        })
+        .done(function(saveResponse) {
+            if (saveResponse.success) {
+                // After saving, perform an AJAX request to validate the API key
+                $.ajax({
+                    url: occ_titles_admin_vars.ajax_url,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'occ_titles_ajax_validate_openai_api_key',
+                        nonce: occ_titles_admin_vars.occ_titles_ajax_nonce,
+                        api_key: apiKey
+                    }
+                })
+                .done(function(validationResponse) {
+                    if (validationResponse.success) {
+                        showNotification('API key is valid and saved. Please wait...', 'success');
+                        setTimeout(function() {
+                            location.reload(); // Refresh the page after a short delay
+                        }, 1000);
+                    } else {
+                        showNotification(validationResponse.data.message || 'Invalid API key.', 'error');
+                    }
+                })
+                .fail(function() {
+                    showNotification('Error validating API key.', 'error');
+                })
+                .always(function() {
+                    removeSpinnerWithMessage(apiKeyField); // Remove the spinner after validation is complete
+                });
+            } else {
+                showNotification(saveResponse.data.message || 'Failed to save API key.', 'error');
+            }
+        })
+        .fail(function() {
+            showNotification('Error saving API key.', 'error');
+        })
+        .always(function() {
+            removeSpinnerWithMessage(apiKeyField); // Ensure the spinner is removed after saving
+        });
+    }, 500));
+
+    /**
+     * Adds a spinner with a message below the input field.
+     */
+    function addSpinnerWithMessage($field, message) {
+        // Remove any existing spinner container to prevent duplicates
+        $field.siblings('.occ-titles-spinner-container').remove();
+
+        // Create the spinner container, spinner, and message
+        const spinnerContainer = $('<div class="occ-titles-spinner-container"></div>');
+        const spinner = $('<div class="occ-titles-spinner"></div>');
+        const spinnerMessage = $('<span class="occ-titles-spinner-message"></span>').text(message);
+
+        // Append the spinner and message to the container and then add it after the input field
+        spinnerContainer.append(spinner).append(spinnerMessage);
+        $field.after(spinnerContainer);
+
+        // Fade in the spinner container
+        spinnerContainer.fadeIn('fast');
+    }
+
+    /**
+     * Removes the spinner and message from below the input field.
+     */
+    function removeSpinnerWithMessage($field) {
+        $field.siblings('.occ-titles-spinner-container').fadeOut('slow', function() {
+            $(this).remove();
+        });
+    }
+
 
 
 

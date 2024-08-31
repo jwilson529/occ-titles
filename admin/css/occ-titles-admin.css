@@ -418,3 +418,41 @@ select#occ_titles_style {
 #occ_titles_controls_container {
     max-width: 100%;
 }
+
+.occ-titles-spinner-container {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    opacity: 1; /* Set opacity to 1 for testing */
+    background-color: rgba(0, 0, 0, 0.1); /* Ensure visibility */
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.occ-titles-spinner {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top: 2px solid #000;
+    border-radius: 50%;
+    animation: occ-titles-spin 1s linear infinite;
+    background-color: red; /* Temporary background color for visibility */
+}
+
+.occ-titles-spinner-message {
+    font-size: 14px;
+    color: #000; /* Ensure the text color is visible */
+}
+
+@keyframes occ-titles-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Hide the duplicate error message */
+#setting-error-invalid-api-key.notice:nth-of-type(2) {
+    display: none;
+}
+
+

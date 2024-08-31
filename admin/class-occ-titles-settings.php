@@ -277,6 +277,7 @@ class Occ_Titles_Settings {
 		echo '<p class="description">' . wp_kses_post( __( 'Get your OpenAI API Key <a href="https://beta.openai.com/signup/">here</a>.', 'occ_titles' ) ) . '</p>';
 	}
 
+
 	/**
 	 * Validates the OpenAI API key and fetches models that support function calling.
 	 *
@@ -285,6 +286,12 @@ class Occ_Titles_Settings {
 	 * @return array|bool List of models if successful, false otherwise.
 	 */
 	public static function validate_openai_api_key( $api_key ) {
+		// Make sure the API key is not empty.
+		if ( empty( $api_key ) ) {
+			return false;
+		}
+
+		// Send a request to the OpenAI API to fetch the models.
 		$response = wp_remote_get(
 			'https://api.openai.com/v1/models',
 			array(
@@ -295,23 +302,30 @@ class Occ_Titles_Settings {
 			)
 		);
 
+		// Check if the request resulted in an error.
 		if ( is_wp_error( $response ) ) {
 			return false;
 		}
 
+		// Retrieve and decode the response body.
 		$body = wp_remote_retrieve_body( $response );
 		$data = json_decode( $body, true );
 
-		// Timestamps for June 13, 2023, and November 6, 2023.
+		// Define the timestamps for June 13, 2023, and November 6, 2023.
 		$function_calling_cutoff          = 1686614400;
 		$parallel_function_calling_cutoff = 1699228800;
 
+		// Check if the data contains an array of models.
 		if ( isset( $data['data'] ) && is_array( $data['data'] ) ) {
-			// Filter models that support function calling.
+			// Filter models that support function calling based on creation date.
 			$models = array_filter(
 				$data['data'],
-				function ( $model ) use ( $function_calling_cutoff ) {
-					return isset( $model['created'] ) && $model['created'] >= $function_calling_cutoff;
+				function ( $model ) use ( $function_calling_cutoff, $parallel_function_calling_cutoff ) {
+					// Check for models that support function calling or parallel function calling.
+					return isset( $model['created'] ) && (
+						$model['created'] >= $function_calling_cutoff ||
+						$model['created'] >= $parallel_function_calling_cutoff
+					);
 				}
 			);
 
@@ -324,7 +338,33 @@ class Occ_Titles_Settings {
 			);
 		}
 
+		// Return false if validation fails or no models are found.
 		return false;
+	}
+
+
+	/**
+	 * AJAX handler for validating the OpenAI API key.
+	 *
+	 * @since 1.0.0
+	 */
+	public function occ_titles_ajax_validate_openai_api_key() {
+		check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce' );
+
+		$api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
+
+		$models = self::validate_openai_api_key( $api_key );
+
+		if ( $models ) {
+			wp_send_json_success(
+				array(
+					'message' => __( 'API key is valid.', 'occ_titles' ),
+					'models'  => $models,
+				)
+			);
+		} else {
+			wp_send_json_error( array( 'message' => __( 'Invalid API key.', 'occ_titles' ) ) );
+		}
 	}
 
 	/**
@@ -459,10 +499,23 @@ class Occ_Titles_Settings {
 			wp_send_json_error( array( 'message' => __( 'Invalid nonce', 'occ_titles' ) ) );
 		}
 
+		// Define the allowed fields that can be saved via AJAX.
+		$allowed_fields = array(
+			'occ_titles_openai_api_key',
+			'occ_titles_post_types',
+			'occ_titles_assistant_id',
+			'occ_titles_openai_model',
+		);
+
 		// Check if the necessary $_POST variables are set.
 		if ( isset( $_POST['field_name'], $_POST['field_value'] ) ) {
-			// Sanitize the field name and value immediately.
+			// Sanitize the field name immediately.
 			$field_name = sanitize_text_field( wp_unslash( $_POST['field_name'] ) );
+
+			// Ensure that the field being saved is in the list of allowed fields.
+			if ( ! in_array( $field_name, $allowed_fields, true ) ) {
+				wp_send_json_error( array( 'message' => __( 'Invalid field name.', 'occ_titles' ) ) );
+			}
 
 			// Sanitize and assign field_value depending on whether it's an array or not.
 			$field_value = is_array( $_POST['field_value'] )
@@ -471,38 +524,34 @@ class Occ_Titles_Settings {
 
 			// Update the option.
 			update_option( $field_name, $field_value );
-		}
 
-		if ( is_array( $field_value ) ) {
-			$field_value = array_map( 'sanitize_text_field', $field_value );
-		} else {
-			$field_value = sanitize_text_field( $field_value );
-		}
-
-		// Validate the Assistant ID if the field being saved is the Assistant ID.
-		if ( 'occ_titles_assistant_id' === $field_name ) {
-			$instance = new self(); // Create an instance to use non-static methods.
-			if ( ! $instance->validate_assistant_id( $field_value ) ) {
-				$new_assistant_id = $instance->occ_titles_create_assistant();
-				if ( $new_assistant_id ) {
-					$field_value = $new_assistant_id;
-					update_option( $field_name, $field_value );
-					wp_send_json_success(
-						array(
-							'message'          => __( 'Invalid Assistant ID. A new one has been created.', 'occ_titles' ),
-							'new_assistant_id' => $new_assistant_id,
-						)
-					);
+			// Additional logic for specific fields.
+			if ( 'occ_titles_assistant_id' === $field_name ) {
+				$instance = new self(); // Create an instance to use non-static methods.
+				if ( ! $instance->validate_assistant_id( $field_value ) ) {
+					$new_assistant_id = $instance->occ_titles_create_assistant();
+					if ( $new_assistant_id ) {
+						$field_value = $new_assistant_id;
+						update_option( $field_name, $field_value );
+						wp_send_json_success(
+							array(
+								'message'          => __( 'Invalid Assistant ID. A new one has been created.', 'occ_titles' ),
+								'new_assistant_id' => $new_assistant_id,
+							)
+						);
+					} else {
+						wp_send_json_error( array( 'message' => __( 'Failed to create a new Assistant ID.', 'occ_titles' ) ) );
+					}
 				} else {
-					wp_send_json_error( array( 'message' => __( 'Failed to create a new Assistant ID.', 'occ_titles' ) ) );
+					update_option( $field_name, $field_value );
+					wp_send_json_success( array( 'message' => __( 'Assistant ID is valid and settings saved successfully.', 'occ_titles' ) ) );
 				}
 			} else {
-				update_option( $field_name, $field_value );
-				wp_send_json_success( array( 'message' => __( 'Assistant ID is valid and settings saved successfully.', 'occ_titles' ) ) );
+				// Return a success response for other fields.
+				wp_send_json_success( array( 'message' => __( 'Settings saved successfully.', 'occ_titles' ) ) );
 			}
 		} else {
-			update_option( $field_name, $field_value );
-			wp_send_json_success( array( 'message' => __( 'Settings saved successfully.', 'occ_titles' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Missing field_name or field_value.', 'occ_titles' ) ) );
 		}
 	}
 }

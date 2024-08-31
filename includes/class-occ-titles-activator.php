@@ -22,12 +22,15 @@
 class Occ_Titles_Activator {
 
 	/**
-	 * Short Description. (use period)
+	 * Runs on plugin activation.
 	 *
-	 * Long Description.
-	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public static function activate() {
+		// Check if the 'occ_titles_assistant_id' option exists.
+		if ( false === get_option( 'occ_titles_assistant_id' ) ) {
+			// Set the option with a placeholder value.
+			update_option( 'occ_titles_assistant_id', '1' );
+		}
 	}
 }

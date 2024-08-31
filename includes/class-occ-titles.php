@@ -146,6 +146,7 @@ class Occ_Titles {
 
 		$this->loader->add_action( 'admin_init', $plugin_settings, 'occ_titles_handle_assistant_creation' );
 		$this->loader->add_action( 'wp_ajax_occ_titles_auto_save', $plugin_settings, 'occ_titles_auto_save' );
+		$this->loader->add_action( 'wp_ajax_occ_titles_ajax_validate_openai_api_key', $plugin_settings, 'occ_titles_ajax_validate_openai_api_key' );
 	}
 
 	/**
