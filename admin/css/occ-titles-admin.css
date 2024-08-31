@@ -23,7 +23,6 @@
 
 #occ_titles_table td.emoji {
     font-size: 3em;
-    /* Increase emoji size */
 }
 
 #occ_titles_table tr.best-title {
@@ -53,16 +52,16 @@
     display: inline-flex;
     align-items: center;
     border-radius: 4px;
-    text-align: center; /* Ensure text is centered */
-    justify-content: center; /* Center contents horizontally */
+    text-align: center;
+    justify-content: center;
 }
 
 #occ_titles_revert_button img,
 #occ_titles_button img,
 #occ_titles_create_assistant img {
-    margin-right: 8px; /* Space between the icon and text */
-    width: 20px; /* Set a fixed width for the SVG */
-    height: 20px; /* Set a fixed height for the SVG */
+    margin-right: 8px;
+    width: 20px;
+    height: 20px;
     vertical-align: middle;
 }
 
@@ -267,21 +266,20 @@ input:checked+.slider:before {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     font-size: 14px;
     display: none;    
-    height: 50px; /* Set a fixed height */
-    line-height: 30px; /* Adjust line-height to vertically center the text */
+    height: 50px;
+    line-height: 30px;
     display: flex;
-    align-items: center; /* Ensure text is centered vertically */
-    justify-content: center; /* Center the text horizontally */
+    align-items: center;
+    justify-content: center;
 }
 
 .occ_titles-notification.success {
     background-color: #28a745;
-    /* Success - Green */
+   
 }
 
 .occ_titles-notification.error {
-    background-color: #dc3545;
-    /* Error - Red */
+    background-color: #dc3545;   
 }
 
 
@@ -384,8 +382,8 @@ input:checked+.slider:before {
 }
 
 .wp-block-post-title {
-    text-align: center; /* Center the title text */
-    width: 100%; /* Ensure the title takes up the full width */
+    text-align: center;
+    width: 100%;
 }
 
 #occ_titles_svg_button {

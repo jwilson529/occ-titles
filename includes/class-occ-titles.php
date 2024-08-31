@@ -73,7 +73,6 @@ class Occ_Titles {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-		// $this->define_public_hooks();
 	}
 
 	/**
@@ -143,25 +142,10 @@ class Occ_Titles {
 
 		$this->loader->add_action( 'admin_menu', $plugin_settings, 'occ_titles_register_options_page' );
 		$this->loader->add_action( 'admin_init', $plugin_settings, 'occ_titles_register_settings' );
-		// $this->loader->add_action( 'edit_form_after_title', $plugin_admin, 'occ_titles_add_meta_box' );
 		$this->loader->add_action( 'wp_ajax_occ_titles_generate_titles', $plugin_admin, 'generate_titles' );
 
 		$this->loader->add_action( 'admin_init', $plugin_settings, 'occ_titles_handle_assistant_creation' );
 		$this->loader->add_action( 'wp_ajax_occ_titles_auto_save', $plugin_settings, 'occ_titles_auto_save' );
-	}
-
-	/**
-	 * Register all of the hooks related to the public-facing functionality of the plugin.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 */
-	private function define_public_hooks() {
-
-		$plugin_public = new Occ_Titles_Public( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 	}
 
 	/**
