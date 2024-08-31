@@ -9,7 +9,7 @@ Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-# OneClickContent - Titles: Generate SEO-Optimized Titles with OpenAI. Bring your own OpenAI API key. Enhance your content’s visibility and engagement with AI-generated titles.
+# OneClickContent - Titles: Generate SEO-Optimized Titles with OpenAI. Bring your own OpenAI API key.
 
 ## Description
 
