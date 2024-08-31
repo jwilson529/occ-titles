@@ -94,13 +94,13 @@ If you encounter any issues or have questions about using OneClickContent - Titl
 
 ## Screenshots
 
-1. ![Title Generation Interface](assets/title-generation-interface.png)
+1. ![Title Generation Interface](assets/OneClickContentTitles-Block.png)
    *Easily generate SEO-optimized titles directly within the post editor.*
 
-2. ![Style Selection](assets/style-selection.png)
+2. ![Classic And Block Editor](assets/OneClickContentTitles.png)
    *Choose from various styles to match the tone and purpose of your content.*
 
-3. ![Settings Screen](assets/settings-screen.png)
+3. ![Settings Screen](assets/OneClickContentTitles-Settings.png)
    *The settings page where you can configure your API key and post type options.*
 
 ## Changelog
