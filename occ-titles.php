@@ -23,6 +23,8 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       occ-titles
  * Domain Path:       /languages
+ * GitHub Plugin URI: jwilson529/occ-titles
+ * GitHub Plugin URI: https://github.com/jwilson529/occ-titles
  */
 
 // If this file is called directly, abort.
