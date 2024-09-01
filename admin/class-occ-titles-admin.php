@@ -72,12 +72,12 @@ class Occ_Titles_Admin {
 		$screen = get_current_screen();
 		if ( 'post' === $screen->base && $this->is_block_editor_active() ) {
 			add_meta_box(
-				'occ_titles_meta_box', // Meta box ID
-				__( 'OCC Titles Meta Box', 'occ_titles' ), // Title
-				array( $this, 'render_meta_box_content' ), // Callback to display content
-				$screen->post_type, // Post type
-				'side', // Context (side, normal, advanced)
-				'default' // Priority
+				'occ_titles_meta_box',
+				__( 'OCC Titles Meta Box', 'occ_titles' ),
+				array( $this, 'render_meta_box_content' ),
+				$screen->post_type,
+				'side',
+				'default'
 			);
 		}
 	}
@@ -87,8 +87,8 @@ class Occ_Titles_Admin {
 	 *
 	 * @since 1.0.0
 	 */
-	public function render_meta_box_content( $post ) {
-		echo '<p></p>';
+	public function render_meta_box_content() {
+		echo '';
 	}
 
 	/**
@@ -120,26 +120,26 @@ class Occ_Titles_Admin {
 	 * @return void
 	 */
 	public function enqueue_styles() {
-	    $screen = get_current_screen();
-	    $selected_post_types = get_option('occ_titles_post_types', array());
+		$screen              = get_current_screen();
+		$selected_post_types = get_option( 'occ_titles_post_types', array() );
 
-	    if ('post' === $screen->base && in_array($screen->post_type, $selected_post_types, true) && !wp_should_load_block_editor_scripts_and_styles()) {
-	        wp_enqueue_style(
-	            $this->plugin_name,
-	            plugin_dir_url(__FILE__) . 'css/occ-titles-admin.css',
-	            array(),
-	            $this->version,
-	            'all'
-	        );
-	    } elseif ('settings_page_occ_titles-settings' === $screen->base) {
-	        wp_enqueue_style(
-	            $this->plugin_name,
-	            plugin_dir_url(__FILE__) . 'css/occ-titles-admin.css',
-	            array(),
-	            $this->version,
-	            'all'
-	        );
-	    }
+		if ( 'post' === $screen->base && in_array( $screen->post_type, $selected_post_types, true ) && ! wp_should_load_block_editor_scripts_and_styles() ) {
+			wp_enqueue_style(
+				$this->plugin_name,
+				plugin_dir_url( __FILE__ ) . 'css/occ-titles-admin.css',
+				array(),
+				$this->version,
+				'all'
+			);
+		} elseif ( 'settings_page_occ_titles-settings' === $screen->base ) {
+			wp_enqueue_style(
+				$this->plugin_name,
+				plugin_dir_url( __FILE__ ) . 'css/occ-titles-admin.css',
+				array(),
+				$this->version,
+				'all'
+			);
+		}
 	}
 
 	/**
@@ -149,68 +149,68 @@ class Occ_Titles_Admin {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
-	    $screen              = get_current_screen(); // Get current screen object.
-	    $selected_post_types = get_option( 'occ_titles_post_types', array() );
+		$screen              = get_current_screen(); // Get current screen object.
+		$selected_post_types = get_option( 'occ_titles_post_types', array() );
 
-	    // Enqueue the settings script on all admin pages.
-	    wp_enqueue_script(
-	        'occ-titles-settings',
-	        plugin_dir_url( __FILE__ ) . 'js/occ-titles-settings.js',
-	        array( 'jquery' ),
-	        $this->version,
-	        true
-	    );
+		// Enqueue the settings script on all admin pages.
+		wp_enqueue_script(
+			'occ-titles-settings',
+			plugin_dir_url( __FILE__ ) . 'js/occ-titles-settings.js',
+			array( 'jquery' ),
+			$this->version,
+			true
+		);
 
-	    // Enqueue scripts on the selected post type edit pages.
-	    if ( 'post' === $screen->base && in_array( $screen->post_type, $selected_post_types, true ) ) {
-	        wp_enqueue_script(
-	            'occ-titles-utils',
-	            plugin_dir_url( __FILE__ ) . 'js/occ-titles-utils.js',
-	            array( 'jquery' ),
-	            $this->version,
-	            true
-	        );
+		// Enqueue scripts on the selected post type edit pages.
+		if ( 'post' === $screen->base && in_array( $screen->post_type, $selected_post_types, true ) ) {
+			wp_enqueue_script(
+				'occ-titles-utils',
+				plugin_dir_url( __FILE__ ) . 'js/occ-titles-utils.js',
+				array( 'jquery' ),
+				$this->version,
+				true
+			);
 
-	        wp_enqueue_script(
-	            'occ-titles-admin',
-	            plugin_dir_url( __FILE__ ) . 'js/occ-titles-admin.js',
-	            array( 'jquery', 'occ-titles-utils', 'occ-titles-settings' ),
-	            $this->version,
-	            true
-	        );
+			wp_enqueue_script(
+				'occ-titles-admin',
+				plugin_dir_url( __FILE__ ) . 'js/occ-titles-admin.js',
+				array( 'jquery', 'occ-titles-utils', 'occ-titles-settings' ),
+				$this->version,
+				true
+			);
 
-	        wp_localize_script(
-	            'occ-titles-admin',
-	            'occ_titles_admin_vars',
-	            array(
-	                'ajax_url'              => admin_url( 'admin-ajax.php' ),
-	                'occ_titles_ajax_nonce' => wp_create_nonce( 'occ_titles_ajax_nonce' ),
-	                'selected_post_types'   => $selected_post_types,
-	                'current_post_type'     => $screen->post_type,
-	                'svg_url'               => plugin_dir_url( __DIR__ ) . 'assets/ai-sparkle.svg',
-	            )
-	        );
-	    } elseif ( 'settings_page_occ_titles-settings' === $screen->base ) {
-	        wp_enqueue_script(
-	            'occ-titles-admin-post',
-	            plugin_dir_url( __FILE__ ) . 'js/occ-titles-admin.js',
-	            array( 'jquery', 'occ-titles-settings' ),
-	            $this->version,
-	            true
-	        );
+			wp_localize_script(
+				'occ-titles-admin',
+				'occ_titles_admin_vars',
+				array(
+					'ajax_url'              => admin_url( 'admin-ajax.php' ),
+					'occ_titles_ajax_nonce' => wp_create_nonce( 'occ_titles_ajax_nonce' ),
+					'selected_post_types'   => $selected_post_types,
+					'current_post_type'     => $screen->post_type,
+					'svg_url'               => plugin_dir_url( __DIR__ ) . 'assets/ai-sparkle.svg',
+				)
+			);
+		} elseif ( 'settings_page_occ_titles-settings' === $screen->base ) {
+			wp_enqueue_script(
+				'occ-titles-admin-post',
+				plugin_dir_url( __FILE__ ) . 'js/occ-titles-admin.js',
+				array( 'jquery', 'occ-titles-settings' ),
+				$this->version,
+				true
+			);
 
-	        wp_localize_script(
-	            'occ-titles-admin-post',
-	            'occ_titles_admin_vars',
-	            array(
-	                'ajax_url'              => admin_url( 'admin-ajax.php' ),
-	                'occ_titles_ajax_nonce' => wp_create_nonce( 'occ_titles_ajax_nonce' ),
-	                'selected_post_types'   => $selected_post_types,
-	                'current_post_type'     => $screen->post_type,
-	                'svg_url'               => plugin_dir_url( __DIR__ ) . 'assets/ai-sparkle.svg',
-	            )
-	        );
-	    }
+			wp_localize_script(
+				'occ-titles-admin-post',
+				'occ_titles_admin_vars',
+				array(
+					'ajax_url'              => admin_url( 'admin-ajax.php' ),
+					'occ_titles_ajax_nonce' => wp_create_nonce( 'occ_titles_ajax_nonce' ),
+					'selected_post_types'   => $selected_post_types,
+					'current_post_type'     => $screen->post_type,
+					'svg_url'               => plugin_dir_url( __DIR__ ) . 'assets/ai-sparkle.svg',
+				)
+			);
+		}
 	}
 
 	/**
@@ -220,12 +220,12 @@ class Occ_Titles_Admin {
 	 * @return void
 	 */
 	public function occ_titles_enqueue_block_editor_assets() {
-	    wp_enqueue_style(
-	        'occ-titles-editor-css',
-	        plugin_dir_url( __FILE__ ) . 'css/occ-titles-admin.css',
-	        array(),
-	        $this->version
-	    );
+		wp_enqueue_style(
+			'occ-titles-editor-css',
+			plugin_dir_url( __FILE__ ) . 'css/occ-titles-admin.css',
+			array(),
+			$this->version
+		);
 	}
 
 

@@ -142,8 +142,6 @@ class Occ_Titles {
 		$this->loader->add_action( 'enqueue_block_editor_assets', $plugin_admin, 'occ_titles_enqueue_block_editor_assets', 5 );
 		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'add_meta_box', 5 );
 
-
-
 		$this->loader->add_action( 'admin_menu', $plugin_settings, 'occ_titles_register_options_page' );
 		$this->loader->add_action( 'admin_init', $plugin_settings, 'occ_titles_register_settings' );
 		$this->loader->add_action( 'wp_ajax_occ_titles_generate_titles', $plugin_admin, 'generate_titles' );
