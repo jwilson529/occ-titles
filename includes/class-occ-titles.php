@@ -137,8 +137,12 @@ class Occ_Titles {
 		$plugin_admin    = new Occ_Titles_Admin( $this->get_plugin_name(), $this->get_version() );
 		$plugin_settings = new Occ_Titles_Settings();
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles', 5 );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts', 5 );
+		$this->loader->add_action( 'enqueue_block_editor_assets', $plugin_admin, 'occ_titles_enqueue_block_editor_assets', 5 );
+		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'add_meta_box', 5 );
+
+
 
 		$this->loader->add_action( 'admin_menu', $plugin_settings, 'occ_titles_register_options_page' );
 		$this->loader->add_action( 'admin_init', $plugin_settings, 'occ_titles_register_settings' );

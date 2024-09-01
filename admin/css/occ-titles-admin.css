@@ -455,4 +455,6 @@ select#occ_titles_style {
     display: none;
 }
 
-
+#occ_titles_meta_box {
+    display: none;
+}
