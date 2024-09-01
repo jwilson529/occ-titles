@@ -2,17 +2,31 @@
     'use strict';
 
     $(document).ready(function() {
-        console.log( occ_titles_admin_vars.svg_url );
-        var isBlockEditor = typeof wp !== 'undefined' && typeof wp.data !== 'undefined';
+        console.log("SVG URL:", occ_titles_admin_vars.svg_url);
 
+        // Function to check the editor mode
+        function checkEditorMode() {
+            var isClassicEditor = document.querySelector('.wp-editor-area') !== null;
+            var isBlockEditor = !isClassicEditor;
+            console.log("Is Classic Editor:", isClassicEditor);
+            console.log("Is Block Editor:", isBlockEditor);
+            return { isClassicEditor, isBlockEditor };
+        }
+
+        // Initialize the editor mode
+        let editorMode = checkEditorMode();
+
+        // Function to get SVG image
         function getSvgImage() {
+            console.log("Generating SVG Image...");
             return '<img src="' + occ_titles_admin_vars.svg_url + '" alt="Generate Titles" />';
         }
 
-        if (!isBlockEditor) {
-            // Classic Editor Logic
+        // Function to add elements in Classic Editor
+        function addClassicEditorElements() {
             var $titleInput = $('#title');
             if ($titleInput.length) {
+                console.log("Title Input Found:", $titleInput);
                 $titleInput.css('position', 'relative');
                 $titleInput.after('<button id="occ_titles_generate_button" class="button" type="button" title="Generate Titles">' + getSvgImage() + '</button>');
 
@@ -28,9 +42,14 @@
 
                 // Insert the container after the title in Classic Editor
                 $('#titlediv').after('<div id="occ_titles_table_container" style="margin-top: 20px;"></div>');
+                console.log("Generate Button and Container added in Classic Editor");
+            } else {
+                console.log("Title Input Not Found in Classic Editor");
             }
-        } else {
-            // Block Editor Logic
+        }
+
+        // Function to add elements in Block Editor
+        function addBlockEditorElements() {
             var observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
                     var $blockTitle = $('h1.wp-block-post-title');
@@ -43,11 +62,12 @@
                         // Insert the button after the title element
                         $blockTitle.parent().css('position', 'relative');
                         $(svgButton).insertAfter($blockTitle);
+                        console.log("SVG Button Added After Title Element in Block Editor");
 
                         // Insert the container for the titles table
                         $blockTitle.closest('.wp-block-post-title').after('<div id="occ_titles_table_container" style="margin-top: 20px;"></div>');
 
-                        // Add revert button, dropdown, and keywords display area after title div in Block Editor
+                        // Add controls container in Block Editor
                         $('#occ_titles_table_container').after(`
                             <div id="occ_titles_controls_container" style="margin-top: 20px;">
                                 <button id="occ_titles_revert_button" class="occ-titles-revert-button" style="display:none;">
@@ -69,6 +89,7 @@
                         `);
 
                         observer.disconnect(); // Stop observing once the element is added
+                        console.log("MutationObserver disconnected in Block Editor");
                     }
                 });
             });
@@ -77,8 +98,20 @@
                 childList: true,
                 subtree: true
             });
+
+            console.log("MutationObserver started in Block Editor");
         }
 
+        // Logic to apply based on the detected editor
+        if (editorMode.isClassicEditor) {
+            console.log("Classic Editor Detected");
+            addClassicEditorElements();
+        } else if (editorMode.isBlockEditor) {
+            console.log("Block Editor Detected");
+            addBlockEditorElements();
+        }
+
+        console.log("Adding controls container and buttons.");
 
         // Add revert button, dropdown, and keywords display area after title div
         $('#occ_titles_table_container').after(`
@@ -101,40 +134,35 @@
             </div>
         `);
 
-
-
+        console.log("Controls container added.");
 
         var hasGenerated = false; // Flag to track if titles have been generated
 
         // Set initial button text
         $('#occ_titles_button').html('Generate Titles');
+        console.log("Initial button text set.");
 
         // Event listener for style dropdown change
         $('#occ_titles_style').on('change', function() {
             updateButtonText();
         });
 
-        /**
-         * Update the button text based on the selected style.
-         */
         function updateButtonText() {
             var selectedStyle = $('#occ_titles_style').val();
             var styleText = $('#occ_titles_style option:selected').text();
 
-            // Set button text based on whether titles have been generated
             var buttonText = hasGenerated && selectedStyle ? 
                 'Generate 5 More ' + styleText + ' Titles' : 
                 'Generate Titles';
 
             $('#occ_titles_button').html(buttonText);
+            console.log("Button text updated to:", buttonText);
         }
 
-        // Variables for handling title generation and retry logic
         var originalTitle = '';
         var retryCount = 0;
         var maxRetries = 1;
 
-        // Add spinner and loading text to the DOM
         $('body').append(`
             <div id="occ_titles_spinner_wrapper" class="occ-spinner-wrapper">
                 <div id="occ_titles_spinner" class="occ-spinner"></div>
@@ -142,29 +170,27 @@
             </div>
         `);
 
-        // Event handler for the "Generate Titles" button
         $(document).on('click', '#occ_titles_generate_button, #occ_titles_button, #occ_titles_svg_button', function(e) {
             e.preventDefault();
 
-            hasGenerated = true; // Mark titles as generated
+            hasGenerated = true; 
             updateButtonText();
 
-            // Show the dropdown and label after the first click
             if (hasGenerated) {
                 $('.occ_titles_style_label, .occ_titles_style_dropdown').show();
             }
 
-            originalTitle = isBlockEditor ? 
+            originalTitle = editorMode.isBlockEditor ? 
                 wp.data.select('core/editor').getEditedPostAttribute('title') : 
                 $('input#title').val();
-            var content = isBlockEditor ? 
+            var content = editorMode.isBlockEditor ? 
                 wp.data.select('core/editor').getEditedPostContent() : 
                 $('textarea#content').val();
 
             console.log('Original Title:', originalTitle);
             console.log('Content:', content);
 
-            var style = $('#occ_titles_style').val() || ''; // Get the selected style
+            var style = $('#occ_titles_style').val() || ''; 
             var nonce = occ_titles_admin_vars.occ_titles_ajax_nonce;
 
             $('#occ_titles_spinner_wrapper').fadeIn();
@@ -172,19 +198,11 @@
             sendAjaxRequest(content, style, nonce);
         });
 
-        // Event handler for the "Revert Title" button
         $(document).on('click', '#occ_titles_revert_button', function(e) {
             e.preventDefault(); 
             setTitleInEditor(originalTitle);
         });
 
-        /**
-         * Send AJAX request to generate titles based on post content and selected style.
-         *
-         * @param {string} content The content of the post.
-         * @param {string} style The selected style for title generation.
-         * @param {string} nonce The AJAX nonce for security.
-         */
         function sendAjaxRequest(content, style, nonce) {
             console.log('Sending AJAX request with content:', content, 'style:', style);
             $.ajax({
@@ -220,12 +238,6 @@
             });
         }
 
-        /**
-         * Extract keywords from an array of titles.
-         *
-         * @param {Array} titles An array of title objects.
-         * @return {Array} An array of extracted keywords.
-         */
         function extractKeywordsFromTitles(titles) {
             var allKeywords = [];
             titles.forEach(function(title) {
@@ -236,11 +248,6 @@
             return allKeywords;
         }
 
-        /**
-         * Display extracted keywords in the UI.
-         *
-         * @param {Array} keywords An array of keywords to display.
-         */
         function displayKeywords(keywords) {
             var keywordsDisplay = $('#occ_keywords_display');
             keywordsDisplay.html(keywords.length ? 
@@ -248,11 +255,6 @@
                 'No keywords generated.');
         }
 
-        /**
-         * Display generated titles in a table format in the UI.
-         *
-         * @param {Array} titles An array of title objects to display.
-         */
         function displayTitles(titles) {
             $('#occ_titles_table').remove(); // Remove existing titles table
 
@@ -307,13 +309,8 @@
             }
         }
 
-        /**
-         * Set the post title in the WordPress editor.
-         *
-         * @param {string} title The title to set in the editor.
-         */
         function setTitleInEditor(title) {
-            if (isBlockEditor) {
+            if (editorMode.isBlockEditor) {
                 wp.data.dispatch('core/editor').editPost({ title: title });
             } else if ($('input#title').length) {
                 var titleInput = $('input#title');
@@ -324,11 +321,6 @@
             }
         }
 
-        /**
-         * Handle AJAX errors with retry logic.
-         *
-         * @param {string} errorMessage The error message to display.
-         */
         function handleAjaxError(errorMessage, content, style, nonce) {
             if (retryCount < maxRetries) {
                 retryCount++;

@@ -165,68 +165,6 @@ class Occ_Titles_Admin {
 
 
 	/**
-	 * Add the "Generate Titles" meta box to the post editor.
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function occ_titles_add_meta_box() {
-		$selected_post_types = get_option( 'occ_titles_post_types', array() );
-
-		foreach ( $selected_post_types as $post_type ) {
-			add_meta_box(
-				'occ_titles_meta_box',
-				esc_html__( 'Generate Titles', 'occ_titles' ),
-				array( $this, 'render_meta_box' ),
-				$post_type,
-				'side',
-				'high'
-			);
-		}
-	}
-
-	/**
-	 * Render the content of the meta box.
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function render_meta_box() {
-		// Add nonce field for security.
-		wp_nonce_field( 'occ_titles_generate_titles', 'occ_titles_nonce' );
-
-		echo '<div id="occ_titles--controls-wrapper" style="margin-bottom: 20px; display:none;">';
-
-		// Hidden dropdown for Style selection initially.
-		echo '<label for="occ_titles_style" style="margin-right: 10px; display: none;" class="occ_titles_style_label">' . esc_html__( 'Select Style:', 'occ_titles' ) . '</label>';
-		echo '<select id="occ_titles_style" name="occ_titles_style" style="display: none;" class="occ_titles_style_dropdown">';
-		echo '<option value="" disabled selected>' . esc_html__( 'Choose a Style...', 'occ_titles' ) . '</option>'; // Placeholder option.
-
-		$styles = array(
-			'How-To',
-			'Listicle',
-			'Question',
-			'Command',
-			'Intriguing Statement',
-			'News Headline',
-			'Comparison',
-			'Benefit-Oriented',
-			'Storytelling',
-			'Problem-Solution',
-		);
-
-		foreach ( $styles as $style ) {
-			echo '<option value="' . esc_attr( strtolower( $style ) ) . '">' . esc_html( $style ) . '</option>';
-		}
-
-		echo '</select>';
-
-		// Generate Titles Button.
-		echo '<button id="occ_titles_button" class="button button-primary">' . esc_html__( 'Generate Titles', 'occ_titles' ) . '</button>';
-		echo '</div>';
-	}
-
-	/**
 	 * Handle the AJAX request to generate titles using OpenAI.
 	 *
 	 * @since 1.0.0
