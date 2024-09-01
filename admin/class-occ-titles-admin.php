@@ -187,7 +187,7 @@ class Occ_Titles_Admin {
 					'occ_titles_ajax_nonce' => wp_create_nonce( 'occ_titles_ajax_nonce' ),
 					'selected_post_types'   => $selected_post_types,
 					'current_post_type'     => $screen->post_type,
-					'svg_url'               => plugin_dir_url( __DIR__ ) . 'assets/ai-sparkle.svg',
+					'svg_url'               => plugin_dir_url( __DIR__ ) . 'img/ai-sparkle.svg',
 				)
 			);
 		} elseif ( 'settings_page_occ_titles-settings' === $screen->base ) {
@@ -207,7 +207,7 @@ class Occ_Titles_Admin {
 					'occ_titles_ajax_nonce' => wp_create_nonce( 'occ_titles_ajax_nonce' ),
 					'selected_post_types'   => $selected_post_types,
 					'current_post_type'     => $screen->post_type,
-					'svg_url'               => plugin_dir_url( __DIR__ ) . 'assets/ai-sparkle.svg',
+					'svg_url'               => plugin_dir_url( __DIR__ ) . 'img/ai-sparkle.svg',
 				)
 			);
 		}

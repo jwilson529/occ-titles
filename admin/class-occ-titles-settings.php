@@ -554,4 +554,11 @@ class Occ_Titles_Settings {
 			wp_send_json_error( array( 'message' => __( 'Missing field_name or field_value.', 'occ_titles' ) ) );
 		}
 	}
+
+	/**
+	 * Display admin notices for settings.
+	 */
+	public function display_admin_notices() {
+		settings_errors();
+	}
 }
