@@ -68,7 +68,7 @@ class Occ_Titles {
 		} else {
 			$this->version = '1.0.0';
 		}
-		$this->plugin_name = 'occ-titles';
+		$this->plugin_name = 'oneclickcontent-titles';
 
 		$this->load_dependencies();
 		$this->set_locale();
