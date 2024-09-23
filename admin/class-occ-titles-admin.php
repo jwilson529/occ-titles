@@ -105,14 +105,6 @@ class Occ_Titles_Admin {
 	}
 
 
-
-
-
-
-
-
-
-
 	/**
 	 * Register the stylesheets for the admin area.
 	 *

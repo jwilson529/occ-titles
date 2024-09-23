@@ -44,7 +44,7 @@ OneClickContent - Titles uses the OpenAI API to generate titles. By using this p
 
 ## Installation
 
-1. Upload the plugin files to the `/wp-content/plugins/occ-titles` directory.
+1. Upload the plugin files to the `/wp-content/plugins/oneclickcontent-titles` directory.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Navigate to Settings -> OneClickContent - Titles to configure the plugin.
 4. Enter your OpenAI API key. (If you don't have one, sign up at [OpenAI](https://openai.com/))
@@ -90,7 +90,7 @@ While the OneClickContent - Titles plugin itself is free, it relies on the OpenA
 
 ### How can I get support if I run into issues?
 
-If you encounter any issues or have questions about using OneClickContent - Titles, you can get support through the [WordPress support forums](https://wordpress.org/support/plugin/occ-titles) or by visiting the [official website](https://github.com/jwilson529/occ-titles).
+If you encounter any issues or have questions about using OneClickContent - Titles, you can get support through the [WordPress support forums](https://wordpress.org/support/plugin/oneclickcontent-titles) or by visiting the [official website](https://github.com/jwilson529/occ-titles).
 
 ## Screenshots
 
