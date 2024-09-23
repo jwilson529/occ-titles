@@ -15,13 +15,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Setup Node.js environment
+      # Setup Node.js environment (force to use Node.js 20)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
+          check-latest: true
 
-      # Remove all hidden files, like .DS_Store and .gitignore
+      # Remove hidden files like .DS_Store
       - name: Remove hidden files
         run: find . -name '.*' -not -name '.git' -not -name '.github' -exec rm -rf {} +
 
