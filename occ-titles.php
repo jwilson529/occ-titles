@@ -21,7 +21,7 @@
  * Author URI:        https://oneclickcontent.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       occ-titles
+ * Text Domain:       oneclickcontent-titles
  * Domain Path:       /languages
  * GitHub Plugin URI: jwilson529/occ-titles
  * GitHub Plugin URI: https://github.com/jwilson529/occ-titles

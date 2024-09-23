@@ -68,14 +68,14 @@ class Occ_Titles_Settings {
 
 		add_settings_section(
 			'occ_titles_settings_section',
-			__( 'OneClickContent - Titles Settings', 'occ_titles' ),
+			__( 'OneClickContent - Titles Settings', 'oneclickcontent-titles' ),
 			array( $this, 'occ_titles_settings_section_callback' ),
 			'occ_titles_settings'
 		);
 
 		add_settings_field(
 			'occ_titles_openai_api_key',
-			__( 'OpenAI API Key', 'occ_titles' ),
+			__( 'OpenAI API Key', 'oneclickcontent-titles' ),
 			array( $this, 'occ_titles_openai_api_key_callback' ),
 			'occ_titles_settings',
 			'occ_titles_settings_section',
@@ -86,17 +86,13 @@ class Occ_Titles_Settings {
 
 		// Only register additional settings if the API key is valid.
 		if ( ! empty( $api_key ) && self::validate_openai_api_key( $api_key ) ) {
-			register_setting( 'occ_titles_settings', 'occ_titles_post_types' );
-			register_setting( 'occ_titles_settings', 'occ_titles_assistant_id' );
-			register_setting(
-				'occ_titles_settings',
-				'occ_titles_openai_model',
-				array( 'sanitize_callback' => 'sanitize_text_field' )
-			);
+			register_setting( 'occ_titles_settings', 'occ_titles_post_types', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+			register_setting( 'occ_titles_settings', 'occ_titles_assistant_id', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+			register_setting( 'occ_titles_settings', 'occ_titles_openai_model', array( 'sanitize_callback' => 'sanitize_text_field' ) );
 
 			add_settings_field(
 				'occ_titles_post_types',
-				__( 'Post Types', 'occ_titles' ),
+				__( 'Post Types', 'oneclickcontent-titles' ),
 				array( $this, 'occ_titles_post_types_callback' ),
 				'occ_titles_settings',
 				'occ_titles_settings_section'
@@ -104,7 +100,7 @@ class Occ_Titles_Settings {
 
 			add_settings_field(
 				'occ_titles_assistant_id',
-				__( 'Assistant ID', 'occ_titles' ),
+				__( 'Assistant ID', 'oneclickcontent-titles' ),
 				array( $this, 'occ_titles_assistant_id_callback' ),
 				'occ_titles_settings',
 				'occ_titles_settings_section',
@@ -113,7 +109,7 @@ class Occ_Titles_Settings {
 
 			add_settings_field(
 				'occ_titles_openai_model',
-				__( 'OpenAI Model', 'occ_titles' ),
+				__( 'OpenAI Model', 'oneclickcontent-titles' ),
 				array( $this, 'occ_titles_openai_model_callback' ),
 				'occ_titles_settings',
 				'occ_titles_settings_section',
@@ -124,12 +120,13 @@ class Occ_Titles_Settings {
 			add_settings_error(
 				'occ_titles_openai_api_key',
 				'invalid-api-key',
-				__( 'The OpenAI API key is invalid. Please enter a valid API key in the OneClickContent - Titles settings to use OneClickContent - Titles.', 'occ_titles' ) . ' ' .
-				'<a href="' . esc_url( admin_url( 'options-general.php?page=occ_titles-settings' ) ) . '">' . __( 'Settings', 'occ_titles' ) . '</a>',
+				__( 'The OpenAI API key is invalid. Please enter a valid API key in the OneClickContent - Titles settings to use OneClickContent - Titles.', 'oneclickcontent-titles' ) .
+				' <a href="' . esc_url( admin_url( 'options-general.php?page=occ_titles-settings' ) ) . '">' . __( 'Settings', 'oneclickcontent-titles' ) . '</a>',
 				'error'
 			);
 		}
 	}
+
 
 	/**
 	 * Callback function for the OpenAI Model setting field.
