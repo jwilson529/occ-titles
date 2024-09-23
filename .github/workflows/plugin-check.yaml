@@ -22,9 +22,9 @@ jobs:
           node-version: '20'
           check-latest: true
 
-      # Remove hidden files like .DS_Store
+      # Remove hidden files, excluding .git and .github directories
       - name: Remove hidden files
-        run: find . -name '.*' -not -name '.git' -not -name '.github' -exec rm -rf {} +
+        run: find . -type f -name '.*' -not -name '.git' -not -name '.github' -exec rm -rf {} +
 
       # Set up PHP environment
       - name: Setup PHP
