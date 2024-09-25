@@ -105,6 +105,9 @@ If you encounter any issues or have questions about using OneClickContent - Titl
 
 ## Changelog
 
+### 1.0.2
+* Initial release of the plugin in the WP Directory.
+
 ### 1.0.0
 * Initial release of the plugin.
 
