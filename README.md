@@ -1,14 +1,6 @@
 # OneClickContent - Titles
 
-**Contributors:** jwilson529  
-**Donate link:** [https://oneclickcontent.com/donate/](https://oneclickcontent.com/donate/)  
-**Tags:** ai, SEO, titles, content-optimization, content-enhancement  
-**Requires at least:** 5.0  
-**Tested up to:** 6.6.1  
-**Stable tag:** 1.0.2 
-**Requires PHP:** 7.2  
-**License:** GPLv2 or later  
-**License URI:** [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html)  
+![Plugin Banner](assets/banner-772x250.png)
 
 **OneClickContent - Titles: Generate SEO-Optimized Titles with OpenAI. Bring your own OpenAI API key.**
 
