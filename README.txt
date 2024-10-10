@@ -1,13 +1,13 @@
 === OneClickContent - Titles ===
-Contributors: jwilson529
-Donate link: https://oneclickcontent.com/donate/
-Tags: ai, SEO, titles, content-optimization, content-enhancement
-Requires at least: 5.0
-Tested up to: 6.6.1
-Stable tag: 1.0.2
-Requires PHP: 7.2
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Contributors: jwilson529  
+Donate link: https://oneclickcontent.com/donate/  
+Tags: ai, SEO, titles, content-optimization, content-enhancement  
+Requires at least: 5.0  
+Tested up to: 6.6.1  
+Stable tag: 1.0.3  
+Requires PHP: 7.2  
+License: GPLv2 or later  
+License URI: https://www.gnu.org/licenses/gpl-2.0.html  
 
 # OneClickContent - Titles: Generate SEO-Optimized Titles with OpenAI. Bring your own OpenAI API key.
 
@@ -46,7 +46,7 @@ OneClickContent - Titles uses the OpenAI API to generate titles. By using this p
 
 1. Upload the plugin files to the `/wp-content/plugins/oneclickcontent-titles` directory.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Navigate to Settings -> OneClickContent - Titles to configure the plugin.
+3. Navigate to **Settings -> OneClickContent - Titles** to configure the plugin.
 4. Enter your OpenAI API key. (If you don't have one, sign up at [OpenAI](https://openai.com/))
 
 ## Important Note
@@ -105,6 +105,12 @@ If you encounter any issues or have questions about using OneClickContent - Titl
 
 ## Changelog
 
+### 1.0.3
+* Improved error handling for API key validation and response errors.
+* Enhanced spinner functionality to display title tips during processing.
+* Added visual and UI improvements for better user experience.
+* Minor bug fixes and stability improvements.
+
 ### 1.0.2
 * Initial release of the plugin in the WP Directory.
 
@@ -113,8 +119,8 @@ If you encounter any issues or have questions about using OneClickContent - Titl
 
 ## Upgrade Notice
 
-### 1.0.0
-This is the initial release of OneClickContent - Titles. Ensure you have an OpenAI API key ready before activating the plugin to take full advantage of the AI-powered title generation.
+### 1.0.3
+* This update improves error handling and UI features, ensuring smoother title generation and better feedback on issues. Please update to benefit from these enhancements.
 
 ## Future Plans
 

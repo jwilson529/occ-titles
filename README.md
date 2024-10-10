@@ -15,6 +15,7 @@ Whether you're a content creator, marketer, or website owner, OneClickContent - 
 OneClickContent - Titles uses the OpenAI API to generate titles. By using this plugin, your data will be sent to OpenAI's servers for processing. By installing and using this plugin, you agree to OpenAI's [Terms of Use](https://openai.com/terms) and [Privacy Policy](https://openai.com/privacy).
 
 ### API Endpoints Used
+
 - **https://api.openai.com/v1/threads**: Used to create threads for generating titles.
 - **https://api.openai.com/v1/threads/{thread_id}/messages**: Used to manage messages within the AI assistant.
 - **https://api.openai.com/v1/threads/{thread_id}/runs**: Used to execute and run the assistant for title generation.
@@ -39,7 +40,7 @@ OneClickContent - Titles uses the OpenAI API to generate titles. By using this p
 
 1. Upload the plugin files to the `/wp-content/plugins/oneclickcontent-titles` directory.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Navigate to Settings -> OneClickContent - Titles to configure the plugin.
+3. Navigate to **Settings -> OneClickContent - Titles** to configure the plugin.
 4. Enter your OpenAI API key. (If you don't have one, sign up at [OpenAI](https://openai.com/))
 
 ## Important Note
@@ -49,6 +50,7 @@ You must use your own OpenAI API key to authenticate and use the AI-driven featu
 ## Getting Started
 
 After installation and activation:
+
 1. Go to the OneClickContent - Titles settings page and enter your OpenAI API key.
 2. Select the post types you want the plugin to be active on.
 3. Create or edit a post/page.
@@ -87,28 +89,38 @@ If you encounter any issues or have questions about using OneClickContent - Titl
 
 ## Screenshots
 
-1. ![Title Generation Interface](assets/OneClickContentTitles-Block.png)
+1. ![Title Generation Interface](assets/OneClickContentTitles-Block.png)  
    *Easily generate SEO-optimized titles directly within the post editor.*
 
-2. ![Classic And Block Editor](assets/OneClickContentTitles.png)
+2. ![Classic And Block Editor](assets/OneClickContentTitles.png)  
    *Choose from various styles to match the tone and purpose of your content.*
 
-3. ![Settings Screen](assets/OneClickContentTitles-Settings.png)
+3. ![Settings Screen](assets/OneClickContentTitles-Settings.png)  
    *The settings page where you can configure your API key and post type options.*
 
 ## Changelog
+
+### 1.0.3
+* Improved error handling for API key validation and response errors.
+* Enhanced spinner functionality to display title tips during processing.
+* Added visual and UI improvements for better user experience.
+* Minor bug fixes and stability improvements.
+
+### 1.0.2
+* Initial release of the plugin in the WP Directory.
 
 ### 1.0.0
 * Initial release of the plugin.
 
 ## Upgrade Notice
 
-### 1.0.0
-This is the initial release of OneClickContent - Titles. Ensure you have an OpenAI API key ready before activating the plugin to take full advantage of the AI-powered title generation.
+### 1.0.3
+* This update improves error handling and UI features, ensuring smoother title generation and better feedback on issues. Please update to benefit from these enhancements.
 
 ## Future Plans
 
 We're continuously working to enhance OneClickContent - Titles. Some features we're considering for future updates include:
+
 - Additional title styles and customization options.
 - Integration with more AI providers.
 
