@@ -256,7 +256,9 @@
         }
 
         function displayTitles(titles) {
+            $('#occ_titles_controls_container').show();
             $('#occ_titles_table').remove(); // Remove existing titles table
+
 
             console.log('Titles received for display:', titles);
 
