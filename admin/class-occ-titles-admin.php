@@ -73,7 +73,7 @@ class Occ_Titles_Admin {
 		if ( 'post' === $screen->base && $this->is_block_editor_active() ) {
 			add_meta_box(
 				'occ_titles_meta_box',
-				__( 'OCC Titles Meta Box', 'oneclickcontent_titles' ),
+				__( 'OCC Titles Meta Box', 'oneclickcontent-titles' ),
 				array( $this, 'render_meta_box_content' ),
 				$screen->post_type,
 				'side',
@@ -231,12 +231,12 @@ class Occ_Titles_Admin {
 	public function generate_titles() {
 		// Check nonce for security.
 		if ( ! check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'oneclickcontent_titles' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'oneclickcontent-titles' ) ) );
 		}
 
 		// Verify the user has the appropriate capability.
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'oneclickcontent_titles' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'oneclickcontent-titles' ) ) );
 		}
 
 		// Sanitize and get incoming data.
@@ -247,7 +247,7 @@ class Occ_Titles_Admin {
 
 		// Check for missing data.
 		if ( empty( $content ) || empty( $api_key ) || empty( $assistant_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Missing data.', 'oneclickcontent_titles' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Missing data.', 'oneclickcontent-titles' ) ) );
 		}
 
 		// Modify the query with the selected style, if provided.
@@ -261,7 +261,7 @@ class Occ_Titles_Admin {
 		// Step 1: Create a new thread.
 		$thread_id = $this->openai_helper->create_thread( $api_key );
 		if ( ! $thread_id ) {
-			wp_send_json_error( array( 'message' => __( 'Failed to create thread.', 'oneclickcontent_titles' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Failed to create thread.', 'oneclickcontent-titles' ) ) );
 		}
 
 		// Step 2: Add message and run thread.
@@ -271,7 +271,7 @@ class Occ_Titles_Admin {
 		if ( isset( $result['titles'] ) && is_array( $result['titles'] ) ) {
 			wp_send_json_success( array( 'titles' => $result['titles'] ) );
 		} else {
-			wp_send_json_error( array( 'message' => __( 'Unexpected response format.', 'oneclickcontent_titles' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unexpected response format.', 'oneclickcontent-titles' ) ) );
 		}
 	}
 }

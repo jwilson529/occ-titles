@@ -26,8 +26,8 @@ class Occ_Titles_Settings {
 	 */
 	public function occ_titles_register_options_page() {
 		add_options_page(
-			__( 'OneClickContent - Titles Settings', 'oneclickcontent_titles' ),
-			__( 'OCC - Titles', 'oneclickcontent_titles' ),
+			__( 'OneClickContent - Titles Settings', 'oneclickcontent-titles' ),
+			__( 'OCC - Titles', 'oneclickcontent-titles' ),
 			'manage_options',
 			'occ_titles-settings',
 			array( $this, 'occ_titles_options_page' )
@@ -147,12 +147,12 @@ class Occ_Titles_Settings {
 					echo '<option value="' . esc_attr( $model ) . '"' . selected( $selected_model, $model, false ) . '>' . esc_html( $model ) . '</option>';
 				}
 				echo '</select>';
-				echo '<p class="description">' . esc_html__( 'Select the OpenAI model to use for the assistant.', 'oneclickcontent_titles' ) . '</p>';
+				echo '<p class="description">' . esc_html__( 'Select the OpenAI model to use for the assistant.', 'oneclickcontent-titles' ) . '</p>';
 			} else {
-				echo '<p class="error">' . esc_html__( 'Unable to retrieve models. Please check your API key.', 'oneclickcontent_titles' ) . '</p>';
+				echo '<p class="error">' . esc_html__( 'Unable to retrieve models. Please check your API key.', 'oneclickcontent-titles' ) . '</p>';
 			}
 		} else {
-			echo '<p class="error">' . esc_html__( 'Please enter a valid OpenAI API key first.', 'oneclickcontent_titles' ) . '</p>';
+			echo '<p class="error">' . esc_html__( 'Please enter a valid OpenAI API key first.', 'oneclickcontent-titles' ) . '</p>';
 		}
 	}
 
@@ -174,21 +174,21 @@ class Occ_Titles_Settings {
 				add_settings_error(
 					'occ_titles_assistant_id',
 					'assistant-created',
-					__( 'A new assistant was created because the existing one was invalid.', 'oneclickcontent_titles' ),
+					__( 'A new assistant was created because the existing one was invalid.', 'oneclickcontent-titles' ),
 					'updated'
 				);
 			} else {
 				add_settings_error(
 					'occ_titles_assistant_id',
 					'assistant-creation-failed',
-					__( 'Failed to create a new assistant.', 'oneclickcontent_titles' ),
+					__( 'Failed to create a new assistant.', 'oneclickcontent-titles' ),
 					'error'
 				);
 			}
 		}
 
 		echo '<input type="text" id="occ_titles_assistant_id" name="occ_titles_assistant_id" value="' . esc_attr( $assistant_id ) . '" />';
-		echo '<p class="description">' . esc_html__( 'Enter the Assistant ID provided by OpenAI or leave as is to use the auto-generated one.', 'oneclickcontent_titles' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Enter the Assistant ID provided by OpenAI or leave as is to use the auto-generated one.', 'oneclickcontent-titles' ) . '</p>';
 	}
 
 	/**
@@ -238,8 +238,8 @@ class Occ_Titles_Settings {
 		$post_types          = get_post_types( array( 'public' => true ), 'names', 'and' );
 		unset( $post_types['attachment'] );
 
-		echo '<p>' . esc_html__( 'Select which post types OneClickContent - Titles should be enabled on:', 'oneclickcontent_titles' ) . '</p>';
-		echo '<p><em>' . esc_html__( 'Custom post types must have titles enabled.', 'oneclickcontent_titles' ) . '</em></p>';
+		echo '<p>' . esc_html__( 'Select which post types OneClickContent - Titles should be enabled on:', 'oneclickcontent-titles' ) . '</p>';
+		echo '<p><em>' . esc_html__( 'Custom post types must have titles enabled.', 'oneclickcontent-titles' ) . '</em></p>';
 
 		foreach ( $post_types as $post_type ) {
 			$checked         = in_array( $post_type, $selected_post_types, true ) ? 'checked' : '';
@@ -259,7 +259,7 @@ class Occ_Titles_Settings {
 	 * @return void
 	 */
 	public function occ_titles_settings_section_callback() {
-		echo '<p>' . esc_html__( 'Configure the settings for the OneClickContent - Titles plugin.', 'oneclickcontent_titles' ) . '</p>';
+		echo '<p>' . esc_html__( 'Configure the settings for the OneClickContent - Titles plugin.', 'oneclickcontent-titles' ) . '</p>';
 	}
 
 	/**
@@ -271,7 +271,7 @@ class Occ_Titles_Settings {
 	public function occ_titles_openai_api_key_callback() {
 		$value = get_option( 'occ_titles_openai_api_key', '' );
 		echo '<input type="password" name="occ_titles_openai_api_key" value="' . esc_attr( $value ) . '" />';
-		echo '<p class="description">' . wp_kses_post( __( 'Get your OpenAI API Key <a href="https://beta.openai.com/signup/">here</a>.', 'oneclickcontent_titles' ) ) . '</p>';
+		echo '<p class="description">' . wp_kses_post( __( 'Get your OpenAI API Key <a href="https://beta.openai.com/signup/">here</a>.', 'oneclickcontent-titles' ) ) . '</p>';
 	}
 
 
@@ -355,12 +355,12 @@ class Occ_Titles_Settings {
 		if ( $models ) {
 			wp_send_json_success(
 				array(
-					'message' => __( 'API key is valid.', 'oneclickcontent_titles' ),
+					'message' => __( 'API key is valid.', 'oneclickcontent-titles' ),
 					'models'  => $models,
 				)
 			);
 		} else {
-			wp_send_json_error( array( 'message' => __( 'Invalid API key.', 'oneclickcontent_titles' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid API key.', 'oneclickcontent-titles' ) ) );
 		}
 	}
 
@@ -379,28 +379,28 @@ class Occ_Titles_Settings {
 
 		// Initial prompt with dynamic style determination or user-selected style.
 		$initial_prompt = array(
-			'description' => esc_html__( 'You are an SEO expert and content writer. Your task is to generate five SEO-optimized titles for a given text. Each title should be engaging, include relevant keywords, and be between 50-60 characters long. Additionally, analyze the sentiment of each title and include it in the response. If a style is provided, use it for all titles; otherwise, choose the most suitable style from the following options: How-To, Listicle, Question, Command, Intriguing Statement, News Headline, Comparison, Benefit-Oriented, Storytelling, and Problem-Solution. The response must adhere to the provided JSON Schema.', 'oneclickcontent_titles' ),
+			'description' => esc_html__( 'You are an SEO expert and content writer. Your task is to generate five SEO-optimized titles for a given text. Each title should be engaging, include relevant keywords, and be between 50-60 characters long. Additionally, analyze the sentiment of each title and include it in the response. If a style is provided, use it for all titles; otherwise, choose the most suitable style from the following options: How-To, Listicle, Question, Command, Intriguing Statement, News Headline, Comparison, Benefit-Oriented, Storytelling, and Problem-Solution. The response must adhere to the provided JSON Schema.', 'oneclickcontent-titles' ),
 			'behavior'    => array(
 				array(
 					'trigger'     => 'message',
-					'instruction' => esc_html__( "When provided with a message containing the content of an article, and an optional style parameter, you must call the `generate_5_titles_with_styles_and_keywords` function. This function will generate exactly five SEO-optimized titles. Each title must include relevant keywords, sentiment analysis ('Positive', 'Negative', or 'Neutral'), and either the provided style or a chosen style. The expected JSON format is:\n[\n  { \"index\": 1, \"text\": \"Title 1 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 2, \"text\": \"Title 2 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 3, \"text\": \"Title 3 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 4, \"text\": \"Title 4 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 5, \"text\": \"Title 5 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] }\n]. Ensure the response is in this exact format.", 'oneclickcontent_titles' ),
+					'instruction' => esc_html__( "When provided with a message containing the content of an article, and an optional style parameter, you must call the `generate_5_titles_with_styles_and_keywords` function. This function will generate exactly five SEO-optimized titles. Each title must include relevant keywords, sentiment analysis ('Positive', 'Negative', or 'Neutral'), and either the provided style or a chosen style. The expected JSON format is:\n[\n  { \"index\": 1, \"text\": \"Title 1 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 2, \"text\": \"Title 2 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 3, \"text\": \"Title 3 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 4, \"text\": \"Title 4 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] },\n  { \"index\": 5, \"text\": \"Title 5 content\", \"style\": \"Style\", \"sentiment\": \"Sentiment\", \"keywords\": [\"keyword1\", \"keyword2\"] }\n]. Ensure the response is in this exact format.", 'oneclickcontent-titles' ),
 				),
 			),
 		);
 
 		$function_definition = array(
 			'name'        => 'generate_5_titles_with_styles_and_keywords',
-			'description' => esc_html__( 'Generate five titles that are search engine optimized for length and copy from the provided article content, including sentiment analysis, style, and relevant keywords, and return them in a specific JSON format.', 'oneclickcontent_titles' ),
+			'description' => esc_html__( 'Generate five titles that are search engine optimized for length and copy from the provided article content, including sentiment analysis, style, and relevant keywords, and return them in a specific JSON format.', 'oneclickcontent-titles' ),
 			'parameters'  => array(
 				'type'       => 'object',
 				'properties' => array(
 					'content' => array(
 						'type'        => 'string',
-						'description' => esc_html__( 'The content of the article for which titles are being generated.', 'oneclickcontent_titles' ),
+						'description' => esc_html__( 'The content of the article for which titles are being generated.', 'oneclickcontent-titles' ),
 					),
 					'style'   => array(
 						'type'        => 'string',
-						'description' => esc_html__( 'The style of the titles to be generated. If not provided, the assistant will choose the most suitable style.', 'oneclickcontent_titles' ),
+						'description' => esc_html__( 'The style of the titles to be generated. If not provided, the assistant will choose the most suitable style.', 'oneclickcontent-titles' ),
 						'enum'        => array(
 							'How-To',
 							'Listicle',
@@ -422,9 +422,9 @@ class Occ_Titles_Settings {
 		$model = get_option( 'occ_titles_openai_model', 'gpt-4o-mini' ); // Default to gpt-4o-mini if not set.
 
 		$payload = array(
-			'description'     => esc_html__( 'Assistant for generating SEO-optimized titles.', 'oneclickcontent_titles' ),
+			'description'     => esc_html__( 'Assistant for generating SEO-optimized titles.', 'oneclickcontent-titles' ),
 			'instructions'    => wp_json_encode( $initial_prompt ),
-			'name'            => esc_html__( 'OneClickContent - Titles Assistant', 'oneclickcontent_titles' ),
+			'name'            => esc_html__( 'OneClickContent - Titles Assistant', 'oneclickcontent-titles' ),
 			'tools'           => array(
 				array(
 					'type'     => 'function',
@@ -476,9 +476,9 @@ class Occ_Titles_Settings {
 
 				if ( $assistant_id ) {
 					update_option( 'occ_titles_assistant_id', $assistant_id );
-					add_settings_error( 'occ_titles_assistant_id', 'assistant-created', __( 'Assistant successfully created.', 'oneclickcontent_titles' ), 'updated' );
+					add_settings_error( 'occ_titles_assistant_id', 'assistant-created', __( 'Assistant successfully created.', 'oneclickcontent-titles' ), 'updated' );
 				} else {
-					add_settings_error( 'occ_titles_assistant_id', 'assistant-creation-failed', __( 'Failed to create assistant.', 'oneclickcontent_titles' ), 'error' );
+					add_settings_error( 'occ_titles_assistant_id', 'assistant-creation-failed', __( 'Failed to create assistant.', 'oneclickcontent-titles' ), 'error' );
 				}
 			}
 		}
@@ -493,7 +493,7 @@ class Occ_Titles_Settings {
 	public static function occ_titles_auto_save() {
 		// Verify the nonce for security.
 		if ( ! check_ajax_referer( 'occ_titles_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid nonce', 'oneclickcontent_titles' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid nonce', 'oneclickcontent-titles' ) ) );
 		}
 
 		// Define the allowed fields that can be saved via AJAX.
@@ -511,7 +511,7 @@ class Occ_Titles_Settings {
 
 			// Ensure that the field being saved is in the list of allowed fields.
 			if ( ! in_array( $field_name, $allowed_fields, true ) ) {
-				wp_send_json_error( array( 'message' => __( 'Invalid field name.', 'oneclickcontent_titles' ) ) );
+				wp_send_json_error( array( 'message' => __( 'Invalid field name.', 'oneclickcontent-titles' ) ) );
 			}
 
 			// Sanitize and assign field_value depending on whether it's an array or not.
@@ -532,23 +532,23 @@ class Occ_Titles_Settings {
 						update_option( $field_name, $field_value );
 						wp_send_json_success(
 							array(
-								'message'          => __( 'Invalid Assistant ID. A new one has been created.', 'oneclickcontent_titles' ),
+								'message'          => __( 'Invalid Assistant ID. A new one has been created.', 'oneclickcontent-titles' ),
 								'new_assistant_id' => $new_assistant_id,
 							)
 						);
 					} else {
-						wp_send_json_error( array( 'message' => __( 'Failed to create a new Assistant ID.', 'oneclickcontent_titles' ) ) );
+						wp_send_json_error( array( 'message' => __( 'Failed to create a new Assistant ID.', 'oneclickcontent-titles' ) ) );
 					}
 				} else {
 					update_option( $field_name, $field_value );
-					wp_send_json_success( array( 'message' => __( 'Assistant ID is valid and settings saved successfully.', 'oneclickcontent_titles' ) ) );
+					wp_send_json_success( array( 'message' => __( 'Assistant ID is valid and settings saved successfully.', 'oneclickcontent-titles' ) ) );
 				}
 			} else {
 				// Return a success response for other fields.
-				wp_send_json_success( array( 'message' => __( 'Settings saved successfully.', 'oneclickcontent_titles' ) ) );
+				wp_send_json_success( array( 'message' => __( 'Settings saved successfully.', 'oneclickcontent-titles' ) ) );
 			}
 		} else {
-			wp_send_json_error( array( 'message' => __( 'Missing field_name or field_value.', 'oneclickcontent_titles' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Missing field_name or field_value.', 'oneclickcontent-titles' ) ) );
 		}
 	}
 
